@@ -34,21 +34,21 @@ public static class DialogueDatabaseLoader
             var row = grid[r];
             var line = new DialogueLine
             {
-                id = Get(row, "id"),
-                next_id = Get(row, "next_id"),
-                speaker = Get(row, "speaker"),
-                scene = Get(row, "scene"),
-                content = Get(row, "content"),
-                type = Get(row, "type"),
-                choices = Get(row, "choices"),
-                target = Get(row, "target"),
-                condition = Get(row, "condition"),
-                expression = Get(row, "expression"),
-                fx = Get(row, "fx"),
-                bg = Get(row, "bg"),
-                effect = Get(row, "effect"),
-                nameOverride = Get(row, "nameOverride"),
-                bgm = Get(row, "bgm"),
+                id = Get(row, Constants.CsvColumns.Id),
+                next_id = Get(row, Constants.CsvColumns.NextId),
+                speaker = Get(row, Constants.CsvColumns.Speaker),
+                scene = Get(row, Constants.CsvColumns.Scene),
+                content = Get(row, Constants.CsvColumns.Content),
+                type = Get(row, Constants.CsvColumns.Type),
+                choices = Get(row, Constants.CsvColumns.Choices),
+                target = Get(row, Constants.CsvColumns.Target),
+                condition = Get(row, Constants.CsvColumns.Condition),
+                expression = Get(row, Constants.CsvColumns.Expression),
+                fx = Get(row, Constants.CsvColumns.Fx),
+                bg = Get(row, Constants.CsvColumns.Bg),
+                effect = Get(row, Constants.CsvColumns.Effect),
+                nameOverride = Get(row, Constants.CsvColumns.NameOverride),
+                bgm = Get(row, Constants.CsvColumns.Bgm),
             };
 
             if (string.IsNullOrEmpty(line.id))
@@ -68,10 +68,10 @@ public static class DialogueDatabaseLoader
         {
             var line = kv.Value;
 
-            bool IsEnd(string x) => string.IsNullOrEmpty(x) || x.Equals("END", StringComparison.OrdinalIgnoreCase);
+            bool IsEnd(string x) => string.IsNullOrEmpty(x) || x.Equals(Constants.EndMarker, StringComparison.OrdinalIgnoreCase);
 
             if (!IsEnd(line.next_id) && !dict.ContainsKey(line.next_id))
-                Debug.LogWarning($"[Dialogue] id={line.id} next_id not found: {line.next_id}");
+                Debug.LogWarning($"{Constants.DialogueTag} id={line.id} next_id not found: {line.next_id}");
 
             // choice/jump 用 target
             if (!string.IsNullOrEmpty(line.target))
@@ -79,17 +79,17 @@ public static class DialogueDatabaseLoader
                 foreach (var t in SplitPipe(line.target))
                 {
                     if (!IsEnd(t) && !dict.ContainsKey(t))
-                        Debug.LogWarning($"[Dialogue] id={line.id} target not found: {t}");
+                        Debug.LogWarning($"{Constants.DialogueTag} id={line.id} target not found: {t}");
                 }
             }
 
             // choice 数量匹配
-            if (line.type.Equals("choice", StringComparison.OrdinalIgnoreCase))
+            if (line.type.Equals(Constants.DialogueType.Choice, StringComparison.OrdinalIgnoreCase))
             {
                 var cs = SplitPipe(line.choices);
                 var ts = SplitPipe(line.target);
                 if (cs.Count != ts.Count)
-                    Debug.LogWarning($"[Dialogue] id={line.id} choice count ({cs.Count}) != target count ({ts.Count})");
+                    Debug.LogWarning($"{Constants.DialogueTag} id={line.id} choice count ({cs.Count}) != target count ({ts.Count})");
             }
         }
 
@@ -100,7 +100,7 @@ public static class DialogueDatabaseLoader
     {
         var res = new List<string>();
         if (string.IsNullOrEmpty(s)) return res;
-        foreach (var part in s.Split('|'))
+        foreach (var part in s.Split(Constants.PipeSeparator[0]))
         {
             var t = part.Trim();
             if (t.Length > 0) res.Add(t);
