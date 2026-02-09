@@ -30,8 +30,8 @@ public class VNManager : MonoBehaviour
 {
     [SerializeField] private TMP_Text speakerText;
     [SerializeField] private TMP_Text contentText;
-    [SerializeField] private string storyFilePath = "Story/prologue";
-    [SerializeField] private string startId = "pre_0001";
+    [SerializeField] private string storyFilePath = Constants.DefaultStoryPath;
+    [SerializeField] private string startId = Constants.DefaultStartId;
 
     private Dictionary<string, DialogueLine> lineDict;
     private DialogueLine currentLine;
@@ -48,9 +48,9 @@ public class VNManager : MonoBehaviour
         if (waitingForInput)
         {
             // 检测鼠标点击或按键
-            if (Input.GetMouseButtonDown(0) || 
-                Input.GetKeyDown(KeyCode.Space) || 
-                Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetMouseButtonDown(Constants.InputKeys.MouseButton) || 
+                Input.GetKeyDown(Constants.InputKeys.Advance1) || 
+                Input.GetKeyDown(Constants.InputKeys.Advance2))
             {
                 DisplayNextLine();
             }
@@ -62,11 +62,11 @@ public class VNManager : MonoBehaviour
         try
         {
             lineDict = DialogueDatabaseLoader.LoadFromResources(storyFilePath);
-            Debug.Log($"[VNManager] Loaded {lineDict.Count} dialogue lines from {storyFilePath}");
+            Debug.Log($"{Constants.VNManagerTag} Loaded {lineDict.Count} dialogue lines from {storyFilePath}");
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"[VNManager] Failed to load story: {e.Message}");
+            Debug.LogError($"{Constants.VNManagerTag} Failed to load story: {e.Message}");
         }
     }
 
@@ -77,7 +77,7 @@ public class VNManager : MonoBehaviour
         {
             if (!lineDict.TryGetValue(startId, out currentLine))
             {
-                Debug.LogError($"[VNManager] Start ID not found: {startId}");
+                Debug.LogError($"{Constants.VNManagerTag} Start ID not found: {startId}");
                 return;
             }
         }
@@ -85,23 +85,23 @@ public class VNManager : MonoBehaviour
         {
             // 后续：根据 next_id 获取下一行
             if (string.IsNullOrEmpty(currentLine.next_id) || 
-                currentLine.next_id.Equals("END", System.StringComparison.OrdinalIgnoreCase))
+                currentLine.next_id.Equals(Constants.EndMarker, System.StringComparison.OrdinalIgnoreCase))
             {
-                Debug.Log("[VNManager] Story ended.");
+                Debug.Log($"{Constants.VNManagerTag} Story ended.");
                 waitingForInput = false;
                 return;
             }
 
             if (!lineDict.TryGetValue(currentLine.next_id, out currentLine))
             {
-                Debug.LogError($"[VNManager] Next line not found: {currentLine.next_id}");
+                Debug.LogError($"{Constants.VNManagerTag} Next line not found: {currentLine.next_id}");
                 waitingForInput = false;
                 return;
             }
         }
 
         // 显示当前行
-        if (currentLine.type.Equals("narration", System.StringComparison.OrdinalIgnoreCase))
+        if (currentLine.type.Equals(Constants.DialogueType.Narration, System.StringComparison.OrdinalIgnoreCase))
         {
             // 旁白：隐藏说话人
             if (speakerText != null) speakerText.text = "";
