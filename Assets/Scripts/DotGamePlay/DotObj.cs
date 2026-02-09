@@ -80,22 +80,18 @@ public class DotObj : MonoBehaviour
             }
         }
 
+        //停止动态检测协程
+        keyWordOnline.StopDynamicCheck();
+        keyWordOnline.ResetKeyWordState();
+        Debug.Log("动态检测协程已停止");
+
         // 未匹配则回归初始位置
         if (!isMatched)
         {
             transform.position = startPos;
         }
 
-        // 触发剧情检测
-        if (keyWordOnline != null)
-        {
-            PlotType triggeredPlot = keyWordOnline.CheckAndAwakePlot();
-            //未满足剧情条件，重置关键词状态
-            if (triggeredPlot == PlotType.None)
-            {
-                keyWordOnline.ResetKeyWordState();
-            }
-        }
+        
     }
 
     private void OnDestroy()

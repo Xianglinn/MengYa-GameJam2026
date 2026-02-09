@@ -44,10 +44,6 @@ public class KeyWordOnline : MonoBehaviour
             Debug.LogError("aKeys对象未挂载KeyWord组件！");
         if (bKeys != null && bKeys.GetComponent<KeyWord>() == null)
             Debug.LogError("bKeys对象未挂载KeyWord组件！");
-
-        // 启动动态检测协程
-        StartDynamicCheck();
-        Debug.Log("动态检测协程已启动");
     }
 
     /// <summary>
@@ -92,17 +88,11 @@ public class KeyWordOnline : MonoBehaviour
     /// </summary>
     public PlotType CheckAndAwakePlot()
     {
-        // 已激活则直接返回
-        if (isKeyWordActivated)
-        {
-            return PlotType.None;
-        }
-
         // 核心依赖为空则返回
         if (solts == null || solts.slotOccupancy == null) return PlotType.None;
 
         // 替换为实际格子名称（必须修改！）
-        bool isAPlotValid = CheckSlotsOccupied(new List<string> { "DotObj (1)", "DotObj (2)", "DotObj (3)" });
+        bool isAPlotValid = CheckSlotsOccupied(new List<string> { "DotSolt01", "DotSolt02", "DotSolt03" });
         if (isAPlotValid)
         {
             aKeys.GetComponent<KeyWord>().SetRed();
@@ -114,7 +104,7 @@ public class KeyWordOnline : MonoBehaviour
         }
 
         // 替换为实际格子名称（必须修改！）
-        bool isBPlotValid = CheckSlotsOccupied(new List<string> { "DotObj (1)", "DotObj (2)" });
+        bool isBPlotValid = CheckSlotsOccupied(new List<string> { "DotSolt01", "DotSolt03" });
         if (isBPlotValid)
         {
             bKeys.GetComponent<KeyWord>().SetRed();
@@ -136,7 +126,7 @@ public class KeyWordOnline : MonoBehaviour
         foreach (string slotName in slotNames)
         {
             if (!solts.slotOccupancy.ContainsKey(slotName))
-            {              
+            {
                 return false;
             }
             if (solts.slotOccupancy[slotName] == null)
@@ -186,6 +176,6 @@ public class KeyWordOnline : MonoBehaviour
         }
 
         // 重置后重启动态检测
-        StartDynamicCheck();
+        //StartDynamicCheck();
     }
 }
