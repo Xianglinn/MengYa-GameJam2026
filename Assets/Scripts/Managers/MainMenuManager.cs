@@ -7,6 +7,7 @@ public class MainMenuManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private Button newGameButton;
     [SerializeField] private Button continueButton;
+    [SerializeField] private Button loadGameButton;  // 打开存档面板
     [SerializeField] private Button quitButton;
     
     [Header("Save Slot Settings")]
@@ -51,7 +52,7 @@ public class MainMenuManager : MonoBehaviour
         GameManager.I.GoToGameScene();
     }
 
-    // 继续游戏（加载存档）
+    // 继续游戏（快速加载最新存档）
     public void OnContinue()
     {
         Debug.Log($"[MainMenu] Loading save from slot {defaultSaveSlot}...");
@@ -72,6 +73,21 @@ public class MainMenuManager : MonoBehaviour
         else
         {
             Debug.LogError("[MainMenu] Failed to load save file!");
+        }
+    }
+
+    // 打开存档面板（选择存档加载）
+    public void OnLoadGame()
+    {
+        Debug.Log("[MainMenu] Opening load game panel...");
+        
+        if (UIManager.I != null)
+        {
+            UIManager.I.OnLoad();
+        }
+        else
+        {
+            Debug.LogError("[MainMenu] UIManager not found!");
         }
     }
 

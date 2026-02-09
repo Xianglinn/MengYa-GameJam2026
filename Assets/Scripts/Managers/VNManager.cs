@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using TMPro;
 
 [System.Serializable]
@@ -47,14 +48,33 @@ public class VNManager : MonoBehaviour
     {
         if (waitingForInput)
         {
-            // 检测鼠标点击或按键
-            if (Input.GetMouseButtonDown(Constants.InputKeys.MouseButton) || 
-                Input.GetKeyDown(Constants.InputKeys.Advance1) || 
+            // 检测按键输入（不受 UI 影响）
+            if (Input.GetKeyDown(Constants.InputKeys.Advance1) || 
                 Input.GetKeyDown(Constants.InputKeys.Advance2))
             {
                 DisplayNextLine();
+                return;
+            }
+            
+            // 检测鼠标点击（需要排除 UI）
+            if (Input.GetMouseButtonDown(Constants.InputKeys.MouseButton))
+            {
+                // 如果点击在 UI 上，不触发对话推进
+                if (IsPointerOverUI())
+                    return;
+                
+                DisplayNextLine();
             }
         }
+    }
+    
+    // 检测鼠标是否在 UI 上
+    private bool IsPointerOverUI()
+    {
+        if (EventSystem.current == null)
+            return false;
+        
+        return EventSystem.current.IsPointerOverGameObject();
     }
 
     void LoadStoryFromFile()
