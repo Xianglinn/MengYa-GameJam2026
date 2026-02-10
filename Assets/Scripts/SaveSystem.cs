@@ -26,7 +26,7 @@ public static class SaveSystem
         {
             currentDialogueId = startNodeId,
             currentScene = Constants.Scenes.Prologue,
-            saveTime = DateTime.Now,
+            saveTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
             saveName = "New Game"
         };
         return state;
@@ -49,7 +49,7 @@ public static class SaveSystem
         
         try
         {
-            state.saveTime = DateTime.Now;
+            state.saveTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
             string json = JsonUtility.ToJson(state, true);
             string path = GetSavePath(slot);
             File.WriteAllText(path, json);
@@ -142,11 +142,13 @@ public static class SaveSystem
                 slot = slot,
                 saveName = state.saveName,
                 saveTime = state.saveTime,
-                currentScene = state.currentScene
+                currentScene = state.currentScene,
+                money = state.money  // 包含金钱
             };
         }
-        catch
+        catch (Exception e)
         {
+            Debug.LogError($"[SaveSystem] Failed to get save info from slot {slot}: {e.Message}");
             return null;
         }
     }
@@ -158,6 +160,15 @@ public class SaveInfo
 {
     public int slot;
     public string saveName;
-    public DateTime saveTime;
+    public string saveTime;  // 字符串格式的时间
     public string currentScene;
+    public int money;
+    
+    // 获取 DateTime 格式的保存时间
+    public DateTime GetSaveDateTime()
+    {
+        if (DateTime.TryParse(saveTime, out DateTime result))
+            return result;
+        return DateTime.MinValue;
+    }
 }

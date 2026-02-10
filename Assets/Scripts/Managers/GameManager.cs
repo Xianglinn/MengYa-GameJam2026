@@ -15,6 +15,24 @@ public class GameManager : MonoBehaviour
         }
         I = this;
         DontDestroyOnLoad(gameObject);
+        
+        // 监听场景加载，自动更新当前场景
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        // 更新当前场景（如果有游戏状态）
+        if (State != null)
+        {
+            State.currentScene = scene.name;
+            Debug.Log($"[GameManager] Scene loaded: {scene.name}, State updated");
+        }
     }
 
     // 开始新游戏
@@ -45,6 +63,11 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("[GameManager] Cannot save: no active game state");
             return;
         }
+        
+        // 确保保存当前场景
+        State.currentScene = SceneManager.GetActiveScene().name;
+        Debug.Log($"[GameManager] Saving to slot {slot}, Scene: {State.currentScene}, Money: {State.money}");
+        
         SaveSystem.Save(slot, State);
     }
 
