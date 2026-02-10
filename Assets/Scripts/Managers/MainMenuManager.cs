@@ -116,4 +116,45 @@ public class MainMenuManager : MonoBehaviour
                 continueButton.interactable = false;
         }
     }
+    
+    // ===== 测试快捷键（仅用于开发测试）=====
+    // TODO: 正式发布前删除此方法
+    private void Update()
+    {
+        // 确保 GameManager 存在
+        if (GameManager.I == null)
+            return;
+        
+        // T 键 - 坏结局（Bad Ending - 出师未捷）
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            Debug.Log("[MainMenu] [TEST] Jumping to Bad Ending (出师未捷)");
+            GameManager.I.StartNewGame(); // 确保有游戏状态
+            GameManager.I.GoToBadEndingFailed();
+        }
+        
+        // Y 键 - 好结局（Happy Ending - 玉祝福）
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            Debug.Log("[MainMenu] [TEST] Jumping to Happy Ending (玉祝福)");
+            GameManager.I.StartNewGame();
+            GameManager.I.GoToHappyEndingJadeBlessed();
+        }
+        
+        // U 键 - 普通结局（Normal Ending - 漂流）
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            Debug.Log("[MainMenu] [TEST] Jumping to Normal Ending (漂流)");
+            GameManager.I.StartNewGame();
+            GameManager.I.GoToNormalEndingDrifting();
+        }
+        
+        // I 键 - 真结局（True Ending - 风）
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Debug.Log("[MainMenu] [TEST] Jumping to True Ending (风)");
+            GameManager.I.StartNewGame();
+            GameManager.I.GoToTrueEndingWind();
+        }
+    }
 }
