@@ -6,6 +6,7 @@ public class GameState
     // 当前对话进度
     public string currentDialogueId;
     public string currentScene;
+    public string currentStoryFile;  // 当前要加载的故事文件路径（用于多结局系统）
     
     // 玩家金钱
     public int money = 0;
@@ -19,6 +20,7 @@ public class GameState
     {
         currentDialogueId = Constants.DefaultStartId;
         currentScene = Constants.Scenes.Prologue;
+        currentStoryFile = Constants.StoryFiles.Prologue;  // 默认序章文件
         saveTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
         saveName = "New Game";
         money = 0;

@@ -40,6 +40,13 @@ public class VNManager : MonoBehaviour
 
     void Start()
     {
+        // 根据 GameState 决定加载哪个故事文件
+        if (GameManager.I?.State != null && !string.IsNullOrEmpty(GameManager.I.State.currentStoryFile))
+        {
+            storyFilePath = GameManager.I.State.currentStoryFile;
+            Debug.Log($"{Constants.VNManagerTag} Loading story file from GameState: {storyFilePath}");
+        }
+        
         LoadStoryFromFile();
         
         // 如果有保存的游戏状态，从保存的位置继续

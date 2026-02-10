@@ -60,6 +60,19 @@ public static class Constants
         public const string MainMenu = "MainMenu";
         public const string Prologue = "Prologue";
         public const string Game = "Game";
+        public const string Ending = "Ending";  // 通用结局场景
+    }
+    
+    // ===== Story File Paths =====
+    public static class StoryFiles
+    {
+        public const string Prologue = "Story/prologue";
+        
+        // 结局 CSV 文件路径
+        public const string EndingBadFailed = "Story/END_BE_failed";      // 坏结局 - 出师未捷
+        public const string EndingNormalDrifting = "Story/END_NE_drifting";  // 普通结局 - 漂流
+        public const string EndingTrueWind = "Story/END_TE_wind";         // 真结局 - 风
+        public const string EndingHappyJadeBlessed = "Story/END_HE_jade_blessed"; // 好结局 - 玉祝福
     }
     
     // ===== Save System =====
