@@ -92,4 +92,45 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(Constants.Scenes.Prologue);
     }
+    
+    // ===== 结局跳转方法 =====
+    
+    /// <summary>
+    /// 跳转到结局场景，加载指定的结局 CSV 文件
+    /// </summary>
+    /// <param name="endingStoryFile">结局故事文件路径（例如 Constants.StoryFiles.EndingBadFailed）</param>
+    /// <param name="startDialogueId">结局的起始对话 ID（默认从第一行开始）</param>
+    public void GoToEnding(string endingStoryFile, string startDialogueId = null)
+    {
+        if (State == null)
+        {
+            Debug.LogError("[GameManager] Cannot go to ending: no active game state");
+            return;
+        }
+        
+        // 设置要加载的故事文件
+        State.currentStoryFile = endingStoryFile;
+        
+        // 设置起始对话 ID（如果提供）
+        if (!string.IsNullOrEmpty(startDialogueId))
+        {
+            State.currentDialogueId = startDialogueId;
+        }
+        else
+        {
+            // 默认从头开始（VNManager 会使用 CSV 的第一行）
+            State.currentDialogueId = "";
+        }
+        
+        Debug.Log($"[GameManager] Going to ending: {endingStoryFile}, Start ID: {startDialogueId ?? "auto"}");
+        
+        // 加载结局场景
+        SceneManager.LoadScene(Constants.Scenes.Ending);
+    }
+    
+    // 便捷方法 - 跳转到各个结局
+    public void GoToBadEndingFailed() => GoToEnding(Constants.StoryFiles.EndingBadFailed, "BE_0001");
+    public void GoToNormalEndingDrifting() => GoToEnding(Constants.StoryFiles.EndingNormalDrifting, "NE_0001");
+    public void GoToTrueEndingWind() => GoToEnding(Constants.StoryFiles.EndingTrueWind, "TE_0001");
+    public void GoToHappyEndingJadeBlessed() => GoToEnding(Constants.StoryFiles.EndingHappyJadeBlessed, "HE_0001");
 }
