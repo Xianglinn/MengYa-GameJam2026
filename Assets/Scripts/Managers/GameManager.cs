@@ -125,7 +125,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"[GameManager] Going to ending: {endingStoryFile}, Start ID: {startDialogueId ?? "auto"}");
         
         // 加载结局场景
-        SceneManager.LoadScene(Constants.Scenes.Ending);
+        SceneManager.LoadScene(Constants.Scenes.Endings);
     }
     
     // 便捷方法 - 跳转到各个结局

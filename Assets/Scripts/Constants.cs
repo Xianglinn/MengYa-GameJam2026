@@ -60,7 +60,7 @@ public static class Constants
         public const string MainMenu = "MainMenu";
         public const string Prologue = "Prologue";
         public const string Game = "Game";
-        public const string Ending = "Ending";  // 通用结局场景
+        public const string Endings = "Endings";  // 通用结局场景
     }
     
     // ===== Story File Paths =====
