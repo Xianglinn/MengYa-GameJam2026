@@ -57,17 +57,13 @@ public class SaveSlotUI : MonoBehaviour
             if (chapterText != null)
                 chapterText.text = GetChapterName(info.currentScene);
 
-            // 显示金钱
+            // 显示金钱（直接从 SaveInfo 获取，不需要重新加载）
             if (moneyText != null)
-            {
-                // 需要从 SaveSystem 加载完整的 GameState 来获取金钱
-                GameState state = SaveSystem.Load(slotIndex);
-                moneyText.text = state != null ? $"💰 {state.money}" : "💰 0";
-            }
+                moneyText.text = $"💰 {info.money}";
 
             // 显示保存时间
             if (saveTimeText != null)
-                saveTimeText.text = FormatSaveTime(info.saveTime);
+                saveTimeText.text = FormatSaveTime(info.GetSaveDateTime());
         }
     }
 
@@ -91,18 +87,8 @@ public class SaveSlotUI : MonoBehaviour
 
     private string FormatSaveTime(DateTime time)
     {
-        TimeSpan diff = DateTime.Now - time;
-
-        if (diff.TotalMinutes < 1)
-            return "刚刚";
-        else if (diff.TotalHours < 1)
-            return $"{(int)diff.TotalMinutes} 分钟前";
-        else if (diff.TotalDays < 1)
-            return $"{(int)diff.TotalHours} 小时前";
-        else if (diff.TotalDays < 7)
-            return $"{(int)diff.TotalDays} 天前";
-        else
-            return time.ToString("yyyy/MM/dd HH:mm");
+        // 直接显示绝对时间
+        return time.ToString("yyyy/MM/dd HH:mm");
     }
 
     public bool IsEmpty => isEmpty;

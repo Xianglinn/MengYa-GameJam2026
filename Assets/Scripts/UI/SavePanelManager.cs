@@ -138,28 +138,55 @@ public class SavePanelManager : MonoBehaviour
     /// </summary>
     private void OnLoadFromSlot(int slotIndex)
     {
+        Debug.Log($"[SavePanel] Attempting to load from slot {slotIndex}");
+
+        // 检查 GameManager 是否存在
+        if (GameManager.I == null)
+        {
+            Debug.LogError("[SavePanel] GameManager not found!");
+            return;
+        }
+
         // 检查槽位是否为空
         if (!SaveSystem.HasSave(slotIndex))
         {
-            Debug.LogWarning($"[SavePanel] Slot {slotIndex} is empty");
+            Debug.LogWarning($"[SavePanel] Slot {slotIndex} is empty, cannot load");
             return;
         }
 
         // 加载游戏
-        if (GameManager.I.TryLoad(slotIndex))
-        {
-            Debug.Log($"[SavePanel] Loaded from slot {slotIndex}");
-
-            // 关闭面板
-            CloseSavePanel();
-
-            // 跳转到游戏场景
-            string sceneName = GameManager.I.State.currentScene;
-            GameManager.I.LoadScene(sceneName);
-        }
-        else
+        bool loadSuccess = GameManager.I.TryLoad(slotIndex);
+        
+        if (!loadSuccess)
         {
             Debug.LogError($"[SavePanel] Failed to load from slot {slotIndex}");
+            return;
         }
+
+        Debug.Log($"[SavePanel] Successfully loaded from slot {slotIndex}");
+
+        // 检查加载的状态
+        if (GameManager.I.State == null)
+        {
+            Debug.LogError("[SavePanel] Loaded state is null!");
+            return;
+        }
+
+        // 获取目标场景
+        string sceneName = GameManager.I.State.currentScene;
+        
+        if (string.IsNullOrEmpty(sceneName))
+        {
+            Debug.LogError("[SavePanel] Scene name is empty!");
+            return;
+        }
+
+        Debug.Log($"[SavePanel] Loading scene: {sceneName}");
+
+        // 关闭面板
+        CloseSavePanel();
+
+        // 跳转到游戏场景
+        GameManager.I.LoadScene(sceneName);
     }
 }

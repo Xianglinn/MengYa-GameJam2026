@@ -41,6 +41,36 @@ public class VNManager : MonoBehaviour
     void Start()
     {
         LoadStoryFromFile();
+        
+        // 如果有保存的游戏状态，从保存的位置继续
+        if (GameManager.I?.State != null && !string.IsNullOrEmpty(GameManager.I.State.currentDialogueId))
+        {
+            string savedId = GameManager.I.State.currentDialogueId;
+            
+            // 检查保存的对话ID是否存在
+            if (lineDict != null && lineDict.TryGetValue(savedId, out DialogueLine savedLine))
+            {
+                currentLine = savedLine;
+                Debug.Log($"{Constants.VNManagerTag} Resuming from saved dialogue: {savedId}");
+                
+                // 显示保存的对话（不是下一行）
+                if (currentLine.type.Equals(Constants.DialogueType.Narration, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    if (speakerText != null) speakerText.text = "";
+                    if (contentText != null) contentText.text = currentLine.content;
+                }
+                else
+                {
+                    if (speakerText != null) speakerText.text = currentLine.DisplayName;
+                    if (contentText != null) contentText.text = currentLine.content;
+                }
+                
+                waitingForInput = true;
+                return;
+            }
+        }
+        
+        // 没有保存的状态，或者保存的ID无效，从头开始
         DisplayNextLine();
     }
 
@@ -132,6 +162,13 @@ public class VNManager : MonoBehaviour
             // 对话：显示说话人和内容
             if (speakerText != null) speakerText.text = currentLine.DisplayName;
             if (contentText != null) contentText.text = currentLine.content;
+        }
+
+        // 更新游戏状态（保存当前进度）
+        if (GameManager.I?.State != null)
+        {
+            GameManager.I.State.currentDialogueId = currentLine.id;
+            Debug.Log($"{Constants.VNManagerTag} Updated progress: {currentLine.id}");
         }
 
         waitingForInput = true;

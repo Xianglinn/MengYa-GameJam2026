@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 [System.Serializable]
 public class GameState
@@ -11,11 +10,8 @@ public class GameState
     // 玩家金钱
     public int money = 0;
     
-    // 已读对话记录（用于跳过已读内容）
-    public List<string> readDialogues = new List<string>();
-    
-    // 存档信息
-    public DateTime saveTime;
+    // 存档信息 (DateTime 不能被 JsonUtility 序列化，用字符串代替)
+    public string saveTime;  // ISO 8601 格式: "2026-02-03T17:30:00"
     public string saveName;
     
     // 构造函数
@@ -23,20 +19,16 @@ public class GameState
     {
         currentDialogueId = Constants.DefaultStartId;
         currentScene = Constants.Scenes.Prologue;
-        saveTime = DateTime.Now;
+        saveTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
         saveName = "New Game";
         money = 0;
     }
     
-    // 标记对话为已读
-    public void MarkAsRead(string dialogueId)
+    // 获取 DateTime 格式的保存时间
+    public DateTime GetSaveDateTime()
     {
-        if (!string.IsNullOrEmpty(dialogueId) && !readDialogues.Contains(dialogueId))
-            readDialogues.Add(dialogueId);
-    }
-    
-    public bool HasRead(string dialogueId)
-    {
-        return readDialogues.Contains(dialogueId);
+        if (DateTime.TryParse(saveTime, out DateTime result))
+            return result;
+        return DateTime.MinValue;
     }
 }
