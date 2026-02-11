@@ -1200,10 +1200,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solts: {fileID: 0}
   checkInterval: 0.1
-  aKeyList: []
-  aPlotSlotNames: []
-  bKeyList: []
-  bPlotSlotNames: []
+  aKeyList:
+  - {fileID: 1503799370}
+  aPlotSlotNames:
+  - DotSolt02
+  - DotSolt04
+  bKeyList:
+  - {fileID: 1381229240}
+  - {fileID: 1503799370}
+  bPlotSlotNames:
+  - DotSolt02
+  - DotSolt03
+  - DotSolt04
   cKeyList: []
   cPlotSlotNames: []
 --- !u!1 &904310005
