@@ -16,6 +16,11 @@ public class SaveSlotUI : MonoBehaviour
     [SerializeField] private GameObject emptySlotPanel;   // 空槽位提示
     [SerializeField] private GameObject dataPanel;        // 有数据时显示的面板
     [SerializeField] private Button slotButton;           // 槽位按钮
+    
+    [Header("Mode Sprites")]
+    [SerializeField] private Sprite saveSprite;           // 保存模式图标
+    [SerializeField] private Sprite loadSprite;           // 加载模式图标
+    [SerializeField] private Image buttonImage;           // 按钮的 Image 组件（用于切换图标）
 
     private int slotIndex;
     private bool isEmpty;
@@ -31,8 +36,42 @@ public class SaveSlotUI : MonoBehaviour
 
         if (slotNumberText != null)
             slotNumberText.text = $"槽位 {index + 1}";
+        
+        // 如果没有手动指定 buttonImage，尝试自动获取
+        if (buttonImage == null)
+            buttonImage = GetComponent<Image>();
 
         RefreshDisplay();
+    }
+    
+    /// <summary>
+    /// 根据面板模式设置按钮图标
+    /// </summary>
+    public void SetMode(SavePanelManager.SavePanelMode mode)
+    {
+        if (buttonImage == null)
+        {
+            Debug.LogWarning($"[SaveSlotUI] Button Image not assigned on slot {slotIndex}");
+            return;
+        }
+        
+        // 根据模式切换图标
+        if (mode == SavePanelManager.SavePanelMode.Save)
+        {
+            if (saveSprite != null)
+            {
+                buttonImage.sprite = saveSprite;
+                Debug.Log($"[SaveSlotUI] Slot {slotIndex} switched to Save sprite");
+            }
+        }
+        else
+        {
+            if (loadSprite != null)
+            {
+                buttonImage.sprite = loadSprite;
+                Debug.Log($"[SaveSlotUI] Slot {slotIndex} switched to Load sprite");
+            }
+        }
     }
 
     public void RefreshDisplay()
