@@ -60,6 +60,7 @@ public static class Constants
         public const string MainMenu = "MainMenu";
         public const string Prologue = "Prologue";
         public const string Game = "Game";
+        public const string DotGamePlayDome1 = "dotgameplaydome 1";  // DotGamePlay 玩法场景
         public const string Endings = "Endings";  // 通用结局场景
     }
     

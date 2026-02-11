@@ -191,8 +191,8 @@ public class VNManager : MonoBehaviour
             if (string.IsNullOrEmpty(currentLine.next_id) || 
                 currentLine.next_id.Equals(Constants.EndMarker, System.StringComparison.OrdinalIgnoreCase))
             {
-                Debug.Log($"{Constants.VNManagerTag} Story ended. Showing ending achievement.");
-                ShowEndingAchievement();  // 显示结局达成画面
+                Debug.Log($"{Constants.VNManagerTag} Story ended.");
+                HandleStoryEnd();  // 根据故事类型处理结束逻辑
                 return;
             }
 
@@ -336,6 +336,43 @@ public class VNManager : MonoBehaviour
                 // 如果没有匹配，返回原名字（可能找不到）
                 Debug.LogWarning($"{Constants.VNManagerTag} Unknown speaker: {speaker}, using default 'npc'");
                 return "npc";  // 默认使用 npc
+        }
+    }
+    
+    /// <summary>
+    /// 处理故事结束 - 根据故事类型决定后续行为
+    /// </summary>
+    private void HandleStoryEnd()
+    {
+        // 检查是否是序章结束（需要跳转到 DotGamePlay）
+        if (storyFilePath.Equals(Constants.StoryFiles.Prologue, System.StringComparison.OrdinalIgnoreCase))
+        {
+            Debug.Log($"{Constants.VNManagerTag} Prologue ended. Going to DotGamePlay scene.");
+            GoToDotGamePlay();
+        }
+        else
+        {
+            // 结局 CSV 结束，显示结局达成画面
+            Debug.Log($"{Constants.VNManagerTag} Ending story ended. Showing ending achievement.");
+            ShowEndingAchievement();
+        }
+    }
+    
+    /// <summary>
+    /// 跳转到 DotGamePlay 场景
+    /// </summary>
+    private void GoToDotGamePlay()
+    {
+        waitingForInput = false;
+        
+        if (GameManager.I != null)
+        {
+            GameManager.I.LoadScene(Constants.Scenes.DotGamePlayDome1);
+        }
+        else
+        {
+            // Fallback：直接加载场景
+            UnityEngine.SceneManagement.SceneManager.LoadScene(Constants.Scenes.DotGamePlayDome1);
         }
     }
     
