@@ -62,8 +62,25 @@ public class SavePanelManager : MonoBehaviour
 
         // 刷新所有槽位显示
         RefreshAllSlots();
+        
+        // 更新所有槽位的图标
+        UpdateSlotSprites(mode);
 
         Debug.Log($"[SavePanel] Opened in {mode} mode");
+    }
+    
+    /// <summary>
+    /// 更新所有槽位的图标
+    /// </summary>
+    private void UpdateSlotSprites(SavePanelMode mode)
+    {
+        foreach (var slot in saveSlots)
+        {
+            if (slot != null)
+            {
+                slot.SetMode(mode);
+            }
+        }
     }
 
     /// <summary>
