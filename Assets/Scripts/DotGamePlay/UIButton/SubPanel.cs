@@ -12,6 +12,22 @@ public class SubPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI tmpText;
     [SerializeField] private string tipText = "请说出chinese";
 
+    // 嘲讽文案数组（整合所有文案）
+    private string[] mockTexts = new string[]
+    {
+        "此路不通，逗号施工",
+        "哎捧u你会说Chinese？",
+        "断句如断粮，瞅给你饿的",
+        "从识字开始重开还来得及",
+        "666话都让你断哭了",
+        "阁下断句，有如盲人摸象",
+        "点击提交失去你的所有文化",
+        "古人托梦：不是这么读",
+        "歧义解析失败：用户全责",
+        "？策划说就放个问号然后什么都不用说",
+        "好醒目，好刺眼，好悲哀！"
+    };
+
     private void Awake()
     {
         if (keyWordOnline == null)
@@ -66,9 +82,16 @@ public class SubPanel : MonoBehaviour
         }
         else
         {
+            // 随机获取嘲讽文案并显示
+            tmpText.text = GetRandomMockText();
             tmpText.gameObject.SetActive(true);
-            tmpText.text = tipText;
-            Debug.Log("未触发任何剧情，显示提示文本");
+            Debug.Log("未触发任何剧情，显示提示");
         }
+    }
+
+    private string GetRandomMockText()
+    {
+        int randomIndex = Random.Range(0, mockTexts.Length);
+        return mockTexts[randomIndex];
     }
 }

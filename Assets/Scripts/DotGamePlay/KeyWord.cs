@@ -56,7 +56,7 @@ public class KeyWord : MonoBehaviour
     /// </summary>
     public void SetRed()
     {
-        Sprite.color = Color.red;
+        Sprite.color = Color.green;
         isRed = true;
     }
 
@@ -73,7 +73,7 @@ public class KeyWord : MonoBehaviour
     /// </summary>
     public void ResetKeyWord()
     {
-        Sprite.color = Color.white;
+        Sprite.color = Color.black;
         isRed = false;
         isMatched = false;
         transform.position = startPos;
