@@ -125,7 +125,7 @@ public class MainMenuManager : MonoBehaviour
         if (GameManager.I == null)
             return;
         
-        // T 键 - 坏结局（Bad Ending - 出师未捷）
+        // T 键 - 坏结局1（Bad Ending - 出师未捷）
         if (Input.GetKeyDown(KeyCode.T))
         {
             Debug.Log("[MainMenu] [TEST] Jumping to Bad Ending (出师未捷)");
@@ -133,7 +133,7 @@ public class MainMenuManager : MonoBehaviour
             GameManager.I.GoToBadEndingFailed();
         }
         
-        // Y 键 - 好结局（Happy Ending - 玉祝福）
+        // Y 键 - 好结局3（Happy Ending - 玉祝福）
         if (Input.GetKeyDown(KeyCode.Y))
         {
             Debug.Log("[MainMenu] [TEST] Jumping to Happy Ending (玉祝福)");
@@ -141,7 +141,7 @@ public class MainMenuManager : MonoBehaviour
             GameManager.I.GoToHappyEndingJadeBlessed();
         }
         
-        // U 键 - 普通结局（Normal Ending - 漂流）
+        // U 键 - 普通结局2（Normal Ending - 漂流）
         if (Input.GetKeyDown(KeyCode.U))
         {
             Debug.Log("[MainMenu] [TEST] Jumping to Normal Ending (漂流)");
@@ -149,7 +149,7 @@ public class MainMenuManager : MonoBehaviour
             GameManager.I.GoToNormalEndingDrifting();
         }
         
-        // I 键 - 真结局（True Ending - 风）
+        // I 键 - 真结局4（True Ending - 风）
         if (Input.GetKeyDown(KeyCode.I))
         {
             Debug.Log("[MainMenu] [TEST] Jumping to True Ending (风)");
