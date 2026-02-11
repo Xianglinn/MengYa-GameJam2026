@@ -3,66 +3,71 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class SubPanel : MonoBehaviour
 {
-    //用于判断何时激活关键词
     [SerializeField] private KeyWordOnline keyWordOnline;
     public Button subBtn;
-    [Header("UI提示配置")]
+    [Header("UI显示配置")]
     [SerializeField] private TextMeshProUGUI tmpText;
-    [SerializeField] private string tipText = "你会说chinese吗"; // 可配置：未触发剧情的提示文本
+    [SerializeField] private string tipText = "请说出chinese";
+
     private void Awake()
     {
-        // 自动查找KeyWordOnline并校验
         if (keyWordOnline == null)
         {
             keyWordOnline = FindObjectOfType<KeyWordOnline>();
         }
     }
-    // Start is called before the first frame update
-    void Start()
+
+    private void Start()
     {
         if (subBtn != null)
         {
-            subBtn.onClick.AddListener(CheckPlot);
+            // 提交按钮用于激活关键词
+            subBtn.onClick.AddListener(ActivateKeyWords);
         }
         else
         {
-            Debug.LogError("SubPanel：触发按钮subBtn未关联！");
+            Debug.LogError("SubPanel的提交按钮subBtn未赋值");
         }
+
         if (tmpText != null)
         {
             tmpText.gameObject.SetActive(false);
-            tmpText.text = tipText; // 加载可配置的提示文本
+            tmpText.text = tipText;
         }
         else
         {
-            Debug.LogError("SubPanel：提示文本tmpText未关联！");
+            Debug.LogError("SubPanel的显示文本tmpText未赋值");
         }
     }
+
     /// <summary>
-    /// 检查并激活剧情分支
+    /// 仅激活对应剧情的关键词（不再触发剧情验证）
     /// </summary>
-    public void CheckPlot()
+    public void ActivateKeyWords()
     {
         if (keyWordOnline == null)
         {
-            Debug.LogError("SubPanel：未找到KeyWordOnline组件，无法检测剧情！");
+            Debug.LogError("SubPanel未找到KeyWordOnline组件，无法激活关键词");
             return;
         }
-        // 启动动态检测协程
+
+        // 启动动态检测（激活对应剧情的关键词）
         keyWordOnline.StartDynamicCheck();
-        Debug.Log("动态检测协程已启动");
-        // 检查是否触发剧情关键词
         PlotType triggeredPlot = keyWordOnline.CheckAndAwakePlot();
+
+        // 仅显示提示文本，不再验证剧情
         if (triggeredPlot != PlotType.None)
         {
-            Debug.Log($"触发剧情类型：{triggeredPlot}，对应关键词已变红可拖动");
             tmpText.gameObject.SetActive(false);
+            Debug.Log($"已激活{triggeredPlot}剧情的关键词，请将所有关键词拖入剧情区");
         }
         else
         {
             tmpText.gameObject.SetActive(true);
+            tmpText.text = tipText;
             Debug.Log("未触发任何剧情，显示提示文本");
         }
     }

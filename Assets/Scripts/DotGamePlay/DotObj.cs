@@ -68,12 +68,11 @@ public class DotObj : MonoBehaviour
                 break;
             }
         }
-        //停止动态检测协程+重置关键词
-        if (keyWordOnline != null)
+        if (!isMatched && keyWordOnline != null)
         {
             keyWordOnline.StopDynamicCheck();
             keyWordOnline.ResetKeyWordState();
-            Debug.Log("动态检测协程已停止");
+            Debug.Log("DotObj未匹配槽位，重置关键词状态");
         }
         // 未匹配则回归初始位置
         if (!isMatched)

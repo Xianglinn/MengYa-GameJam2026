@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,92 +16,99 @@ public class KeyWordOnline : MonoBehaviour
     private bool isKeyWordActivated = false;
     private PlotType currentActivatedPlot = PlotType.None;
 
-    [Header("¾çÇé¼ì²âÅäÖÃ")]
-    [SerializeField] private float checkInterval = 0.1f; // ¼ì²âÆµÂÊ£¬ĞÂ³¡¾°¿ÉÖ±½Óµ÷Õû
+    [Header("å‰§æƒ…æ£€æµ‹é…ç½®")]
+    [SerializeField] private float checkInterval = 0.1f; // æ£€æµ‹é¢‘ç‡ï¼Œæ–°åœºæ™¯å¯ç›´æ¥è°ƒæ•´
 
-    [Header("A¾çÇéÅäÖÃ£¨¶à¹Ø¼ü´Ê£©")]
+    [Header("Aå‰§æƒ…é…ç½®ï¼ˆå¤šå…³é”®è¯ï¼‰")]
     [SerializeField] private List<GameObject> aKeyList = new List<GameObject>();
-    [SerializeField] private List<string> aPlotSlotNames = new List<string>(); // ¿ÉÅäÖÃ£ºA¾çÇé´¥·¢µÄ¸ñ×ÓÃûÁĞ±í
+    [SerializeField] private List<string> aPlotSlotNames = new List<string>(); // å¯é…ç½®ï¼šAå‰§æƒ…è§¦å‘çš„æ ¼å­ååˆ—è¡¨
 
-    [Header("B¾çÇéÅäÖÃ£¨¶à¹Ø¼ü´Ê£©")]
+    [Header("Bå‰§æƒ…é…ç½®ï¼ˆå¤šå…³é”®è¯ï¼‰")]
     [SerializeField] private List<GameObject> bKeyList = new List<GameObject>();
-    [SerializeField] private List<string> bPlotSlotNames = new List<string>(); // ¿ÉÅäÖÃ£ºB¾çÇé´¥·¢µÄ¸ñ×ÓÃûÁĞ±í
+    [SerializeField] private List<string> bPlotSlotNames = new List<string>(); // å¯é…ç½®ï¼šBå‰§æƒ…è§¦å‘çš„æ ¼å­ååˆ—è¡¨
 
-    [Header("C¾çÇéÅäÖÃ£¨À©Õ¹£¬¶à¹Ø¼ü´Ê£©")]
+    [Header("Cå‰§æƒ…é…ç½®ï¼ˆæ‰©å±•ï¼Œå¤šå…³é”®è¯ï¼‰")]
     [SerializeField] private List<GameObject> cKeyList = new List<GameObject>();
-    [SerializeField] private List<string> cPlotSlotNames = new List<string>(); // ¿ÉÅäÖÃ£ºC¾çÇé´¥·¢µÄ¸ñ×ÓÃûÁĞ±í
+    [SerializeField] private List<string> cPlotSlotNames = new List<string>(); // å¯é…ç½®ï¼šCå‰§æƒ…è§¦å‘çš„æ ¼å­ååˆ—è¡¨
 
-    private Coroutine checkCoroutine; // Ğ­³ÌÒıÓÃ
+    // å¯¹å¤–æš´éœ²å±æ€§
+    public PlotType CurrentActivatedPlot => currentActivatedPlot;
+    public bool IsKeyWordActivated => isKeyWordActivated;
+    public List<GameObject> AKeyList => aKeyList;
+    public List<GameObject> BKeyList => bKeyList;
+    public List<GameObject> CKeyList => cKeyList;
+
+    private Coroutine checkCoroutine; // åç¨‹å¼•ç”¨
 
     void Start()
     {
-        // ³õÊ¼»¯DotSolts²¢Ğ£Ñé
+        // åˆå§‹åŒ–DotSoltså¹¶æ ¡éªŒ
         if (solts == null)
         {
             solts = GameObject.Find("DotSolts")?.GetComponent<DotSolts>();
             if (solts == null)
             {
-                Debug.LogError("³¡¾°ÖĞÎ´ÕÒµ½DotSolts¶ÔÏó");
+                Debug.LogError("åœºæ™¯ä¸­æœªæ‰¾åˆ°DotSoltså¯¹è±¡");
                 return;
             }
         }
 
-        // Ğ£Ñé¹Ø¼ü´ÊÁĞ±íºÍ¿¨²ÛÅäÖÃ
+        // æ ¡éªŒå…³é”®è¯åˆ—è¡¨å’Œå¡æ§½é…ç½®
         ValidatePlotConfig(aKeyList, aPlotSlotNames, "A");
         ValidatePlotConfig(bKeyList, bPlotSlotNames, "B");
         ValidatePlotConfig(cKeyList, cPlotSlotNames, "C", true);
 
-        // ¼ì²â¿¨²ÛÌõ¼ş½»¼¯£¨µ÷ÊÔÌáÊ¾£©
+        // æ£€æµ‹å¡æ§½æ¡ä»¶äº¤é›†ï¼ˆè°ƒè¯•æç¤ºï¼‰
         CheckSlotIntersection();
     }
 
-    #region ³õÊ¼»¯Ğ£Ñé
+    #region åˆå§‹åŒ–æ ¡éªŒ
     /// <summary>
-    /// Í³Ò»Ğ£Ñé¾çÇéµÄ¹Ø¼ü´ÊºÍ¿¨²ÛÅäÖÃ
+    /// ç»Ÿä¸€æ ¡éªŒå‰§æƒ…çš„å…³é”®è¯å’Œå¡æ§½é…ç½®
     /// </summary>
     private void ValidatePlotConfig(List<GameObject> keyList, List<string> slotList, string plotTag, bool isExtend = false)
     {
-        // À©Õ¹¾çÇé£¨ÈçC£©ÔÊĞí¿ÕÅäÖÃ£¬·ÇÀ©Õ¹¾çÇéÇ¿ÖÆĞ£Ñé
+        // æ‰©å±•å‰§æƒ…ï¼ˆå¦‚Cï¼‰å…è®¸ç©ºé…ç½®ï¼Œéæ‰©å±•å‰§æƒ…å¼ºåˆ¶æ ¡éªŒ
         if (slotList.Count == 0 && !isExtend)
         {
-            Debug.LogError($"{plotTag}¾çÇéÎ´ÅäÖÃ¿¨²ÛÁĞ±í£¬ÎŞ·¨´¥·¢£¡");
+            Debug.LogError($"{plotTag}å‰§æƒ…æœªé…ç½®å¡æ§½åˆ—è¡¨ï¼Œæ— æ³•è§¦å‘ï¼");
             return;
         }
         if (keyList.Count == 0 && !isExtend)
         {
-            Debug.LogError($"{plotTag}¾çÇéÎ´ÅäÖÃ¹Ø¼ü´ÊÁĞ±í£¬ÎŞ·¨¼¤»î£¡");
+            Debug.LogError($"{plotTag}å‰§æƒ…æœªé…ç½®å…³é”®è¯åˆ—è¡¨ï¼Œæ— æ³•æ¿€æ´»ï¼");
             return;
         }
-        // Ğ£Ñé¹Ø¼ü´Ê×é¼ş
+        // æ ¡éªŒå…³é”®è¯ç»„ä»¶
         foreach (var keyObj in keyList)
         {
             if (keyObj == null)
             {
-                Debug.LogError($"{plotTag}¾çÇé¹Ø¼ü´ÊÁĞ±í´æÔÚ¿Õ¶ÔÏó£¡");
+                Debug.LogError($"{plotTag}å‰§æƒ…å…³é”®è¯åˆ—è¡¨å­˜åœ¨ç©ºå¯¹è±¡ï¼");
                 continue;
             }
             if (keyObj.GetComponent<KeyWord>() == null)
             {
-                Debug.LogError($"{plotTag}¾çÇé¶ÔÏó¡¾{keyObj.name}¡¿Î´¹ÒÔØKeyWord×é¼ş£¡");
+                Debug.LogError($"{plotTag}å‰§æƒ…å¯¹è±¡ã€{keyObj.name}ã€‘æœªæŒ‚è½½KeyWordç»„ä»¶ï¼");
             }
         }
     }
 
     /// <summary>
-    /// ¼ì²â¿¨²ÛÌõ¼ş½»¼¯£¨½öµ÷ÊÔÌáÊ¾£©
+    /// æ£€æµ‹å¡æ§½æ¡ä»¶äº¤é›†ï¼ˆä»…è°ƒè¯•æç¤ºï¼‰
     /// </summary>
     private void CheckSlotIntersection()
     {
         if (HasIntersection(aPlotSlotNames, bPlotSlotNames))
-            Debug.LogWarning($"A/B¾çÇé¿¨²Û´æÔÚ½»¼¯£¬³åÍ»³¡¾°½«´¥·¢ÅÅËû¹æÔò");
+            Debug.LogWarning($"A/Bå‰§æƒ…å¡æ§½å­˜åœ¨äº¤é›†ï¼Œå†²çªåœºæ™¯å°†è§¦å‘æ’ä»–è§„åˆ™");
         if (HasIntersection(aPlotSlotNames, cPlotSlotNames))
-            Debug.LogWarning($"A/C¾çÇé¿¨²Û´æÔÚ½»¼¯£¬³åÍ»³¡¾°½«´¥·¢ÅÅËû¹æÔò");
+            Debug.LogWarning($"A/Cå‰§æƒ…å¡æ§½å­˜åœ¨äº¤é›†ï¼Œå†²çªåœºæ™¯å°†è§¦å‘æ’ä»–è§„åˆ™");
         if (HasIntersection(bPlotSlotNames, cPlotSlotNames))
-            Debug.LogWarning($"B/C¾çÇé¿¨²Û´æÔÚ½»¼¯£¬³åÍ»³¡¾°½«´¥·¢ÅÅËû¹æÔò");
+            Debug.LogWarning($"B/Cå‰§æƒ…å¡æ§½å­˜åœ¨äº¤é›†ï¼Œå†²çªåœºæ™¯å°†è§¦å‘æ’ä»–è§„åˆ™");
     }
 
     /// <summary>
-    /// ÅĞ¶ÏÁ½¸öÁĞ±íÊÇ·ñÓĞ½»¼¯
+    /// åˆ¤æ–­ä¸¤ä¸ªåˆ—è¡¨æ˜¯å¦æœ‰äº¤é›†
     /// </summary>
     private bool HasIntersection(List<string> list1, List<string> list2)
     {
@@ -114,19 +121,19 @@ public class KeyWordOnline : MonoBehaviour
     }
     #endregion
 
-    #region Ğ­³Ì¹ÜÀí
+    #region åç¨‹ç®¡ç†
     /// <summary>
-    /// Æô¶¯¶¯Ì¬¼ì²âĞ­³Ì
+    /// å¯åŠ¨åŠ¨æ€æ£€æµ‹åç¨‹
     /// </summary>
     public void StartDynamicCheck()
     {
         if (checkCoroutine != null) StopCoroutine(checkCoroutine);
         checkCoroutine = StartCoroutine(CheckPlotConditionCoroutine());
-        Debug.Log("¶¯Ì¬¼ì²âĞ­³ÌÒÑÆô¶¯");
+        Debug.Log("åŠ¨æ€æ£€æµ‹åç¨‹å·²å¯åŠ¨");
     }
 
     /// <summary>
-    /// Í£Ö¹¶¯Ì¬¼ì²âĞ­³Ì
+    /// åœæ­¢åŠ¨æ€æ£€æµ‹åç¨‹
     /// </summary>
     public void StopDynamicCheck()
     {
@@ -134,12 +141,12 @@ public class KeyWordOnline : MonoBehaviour
         {
             StopCoroutine(checkCoroutine);
             checkCoroutine = null;
-            Debug.Log("KeyWordOnline£º¶¯Ì¬¼ì²âĞ­³ÌÒÑÍ£Ö¹");
+            Debug.Log("KeyWordOnlineï¼šåŠ¨æ€æ£€æµ‹åç¨‹å·²åœæ­¢");
         }
     }
 
     /// <summary>
-    /// ¶¨Ê±¼ì²é¾çÇéÌõ¼şĞ­³Ì£¨ÓÅ»¯£ºÔö¼Ó·µ»ØÖµÅĞ¶Ï£¬±ÜÃâÎŞĞ§Ö´ĞĞ£©
+    /// å®šæ—¶æ£€æŸ¥å‰§æƒ…æ¡ä»¶åç¨‹ï¼ˆä¼˜åŒ–ï¼šå¢åŠ è¿”å›å€¼åˆ¤æ–­ï¼Œé¿å…æ— æ•ˆæ‰§è¡Œï¼‰
     /// </summary>
     private IEnumerator CheckPlotConditionCoroutine()
     {
@@ -147,7 +154,7 @@ public class KeyWordOnline : MonoBehaviour
         {
             if (!isKeyWordActivated && solts != null && solts.slotOccupancy != null)
             {
-                // ¼ì²âµ½¾çÇé´¥·¢ÔòÖ±½ÓÍË³öĞ­³Ì£¬±ÜÃâÖØ¸´¼ì²â
+                // æ£€æµ‹åˆ°å‰§æƒ…è§¦å‘åˆ™ç›´æ¥é€€å‡ºåç¨‹ï¼Œé¿å…é‡å¤æ£€æµ‹
                 if (CheckAndAwakePlot() != PlotType.None)
                 {
                     checkCoroutine = null;
@@ -159,38 +166,29 @@ public class KeyWordOnline : MonoBehaviour
     }
     #endregion
 
-    #region ºËĞÄ¼ì²âÂß¼­
+    #region æ ¸å¿ƒæ£€æµ‹é€»è¾‘
     /// <summary>
-    /// ¼ì²é²¢¼¤»î¾çÇé·ÖÖ§£¨ºËĞÄ£º¼æÈİµ¥Ìõ¼ş£¬ÅÅËû¶àÌõ¼ş£©
+    /// æ£€æŸ¥å¹¶æ¿€æ´»å‰§æƒ…åˆ†æ”¯ï¼ˆæ ¸å¿ƒï¼šå…¼å®¹å•æ¡ä»¶ï¼Œæ’ä»–å¤šæ¡ä»¶ï¼‰
     /// </summary>
     public PlotType CheckAndAwakePlot()
     {
-        // »ù´¡ÒÀÀµĞ£Ñé
+        // åŸºç¡€ä¾èµ–æ ¡éªŒ
         if (solts == null || solts.slotOccupancy == null) return PlotType.None;
 
-        // µÚÒ»²½£ºÍ³¼Æµ±Ç°Âú×ãÌõ¼şµÄ¾çÇéÊıÁ¿
-        int validPlotCount = GetValidPlotCount();
-        // ¶à¾çÇéÌõ¼şÍ¬Ê±Âú×ã¡ú´¥·¢ÅÅËû£¬²»¼¤»îÈÎºÎ¾çÇé
-        if (validPlotCount >= 2)
-        {
-            Debug.LogWarning($"¼ì²âµ½{validPlotCount}¸ö¾çÇéÌõ¼şÍ¬Ê±Âú×ã£¬´¥·¢ÅÅËû¹æÔò£¬Ôİ²»¼¤»îÈÎºÎ¾çÇé");
-            return PlotType.None;
-        }
-
-        // µÚ¶ş²½£ºµ¥¾çÇéÌõ¼şÂú×ã¡úÕı³£¼¤»î£¨°´C¡úB¡úAÓÅÏÈ¼¶£¬¼æÈİÀ©Õ¹£©
-        // ¼¤»îC¾çÇé
         if (cKeyList.Count > 0 && cPlotSlotNames.Count > 0 && CheckSlotsOccupied(cPlotSlotNames))
         {
             ActivatePlotKey(cKeyList, PlotType.Cplot);
             return PlotType.Cplot;
         }
-        // ¼¤»îB¾çÇé
+
+        // ï¿½ï¿½ï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½ï¼ˆä¸­ä¼˜å…ˆçº§ï¼‰
         if (bKeyList.Count > 0 && bPlotSlotNames.Count > 0 && CheckSlotsOccupied(bPlotSlotNames))
         {
             ActivatePlotKey(bKeyList, PlotType.BPlot);
             return PlotType.BPlot;
         }
-        // ¼¤»îA¾çÇé
+
+        // ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¼ˆæœ€ä½ä¼˜å…ˆçº§ï¼‰
         if (aKeyList.Count > 0 && aPlotSlotNames.Count > 0 && CheckSlotsOccupied(aPlotSlotNames))
         {
             ActivatePlotKey(aKeyList, PlotType.APlot);
@@ -200,20 +198,9 @@ public class KeyWordOnline : MonoBehaviour
         return PlotType.None;
     }
 
-    /// <summary>
-    /// Í³¼Æµ±Ç°Âú×ãÌõ¼şµÄ¾çÇéÊıÁ¿
-    /// </summary>
-    private int GetValidPlotCount()
-    {
-        int count = 0;
-        if (aKeyList.Count > 0 && aPlotSlotNames.Count > 0 && CheckSlotsOccupied(aPlotSlotNames)) count++;
-        if (bKeyList.Count > 0 && bPlotSlotNames.Count > 0 && CheckSlotsOccupied(bPlotSlotNames)) count++;
-        if (cKeyList.Count > 0 && cPlotSlotNames.Count > 0 && CheckSlotsOccupied(cPlotSlotNames)) count++;
-        return count;
-    }
 
     /// <summary>
-    /// ¼ì²éÖ¸¶¨´«Èë¸ñ×ÓÊÇ·ñÈ«²¿±»Õ¼ÓÃ
+    /// æ£€æŸ¥æŒ‡å®šä¼ å…¥æ ¼å­æ˜¯å¦å…¨éƒ¨è¢«å ç”¨
     /// </summary>
     private bool CheckSlotsOccupied(List<string> slotNames)
     {
@@ -221,7 +208,7 @@ public class KeyWordOnline : MonoBehaviour
         {
             if (!solts.slotOccupancy.ContainsKey(slotName))
             {
-                Debug.LogWarning($"¸ñ×Ó{slotName}²»´æÔÚÓÚDotSoltsÖĞ");
+                Debug.LogWarning($"æ ¼å­{slotName}ä¸å­˜åœ¨äºDotSoltsä¸­");
                 return false;
             }
             if (solts.slotOccupancy[slotName] == null)
@@ -233,7 +220,7 @@ public class KeyWordOnline : MonoBehaviour
     }
 
     /// <summary>
-    /// ¼¤»îÖ¸¶¨¾çÇéµÄËùÓĞ¹Ø¼ü´Ê
+    /// æ¿€æ´»æŒ‡å®šå‰§æƒ…çš„æ‰€æœ‰å…³é”®è¯
     /// </summary>
     private void ActivatePlotKey(List<GameObject> keyList, PlotType plotType)
     {
@@ -242,17 +229,17 @@ public class KeyWordOnline : MonoBehaviour
             if (keyObj == null) continue;
             KeyWord keyComp = keyObj.GetComponent<KeyWord>();
             if (keyComp != null) keyComp.SetRed();
-            else Debug.LogWarning($"¹Ø¼ü´Ê¡¾{keyObj.name}¡¿ÎŞKeyWord×é¼ş£¬Ìø¹ı¼¤»î");
+            else Debug.LogWarning($"å…³é”®è¯ã€{keyObj.name}ã€‘æ— KeyWordç»„ä»¶ï¼Œè·³è¿‡æ¿€æ´»");
         }
         isKeyWordActivated = true;
         currentActivatedPlot = plotType;
         StopDynamicCheck();
-        Debug.Log($"´¥·¢¾çÇéÀàĞÍ£º{plotType}£¬¶ÔÓ¦¹Ø¼ü´ÊÒÑ±äºì¿ÉÍÏ¶¯");
+        Debug.Log($"è§¦å‘å‰§æƒ…ç±»å‹ï¼š{plotType}ï¼Œå¯¹åº”å…³é”®è¯å·²å˜çº¢å¯æ‹–åŠ¨");
     }
     #endregion
 
     /// <summary>
-    /// ÖØÖÃ¹Ø¼ü´Ê×´Ì¬£¨¾çÇéÖØĞÂ¿ªÊ¼/ÇĞ»»Ê±µ÷ÓÃ£©
+    /// é‡ç½®å…³é”®è¯çŠ¶æ€ï¼ˆå‰§æƒ…é‡æ–°å¼€å§‹/åˆ‡æ¢æ—¶è°ƒç”¨ï¼‰
     /// </summary>
     public void ResetKeyWordState()
     {
@@ -262,11 +249,11 @@ public class KeyWordOnline : MonoBehaviour
         ResetPlotKey(aKeyList, "A");
         ResetPlotKey(bKeyList, "B");
         ResetPlotKey(cKeyList, "C");
-        Debug.Log("ËùÓĞ¾çÇé¹Ø¼ü´Ê×´Ì¬ÒÑÖØÖÃ");
+        Debug.Log("æ‰€æœ‰å‰§æƒ…å…³é”®è¯çŠ¶æ€å·²é‡ç½®");
     }
 
     /// <summary>
-    /// ÖØÖÃÖ¸¶¨¾çÇéµÄËùÓĞ¹Ø¼ü´Ê
+    /// é‡ç½®æŒ‡å®šå‰§æƒ…çš„æ‰€æœ‰å…³é”®è¯
     /// </summary>
     private void ResetPlotKey(List<GameObject> keyList, string plotTag)
     {
@@ -275,7 +262,7 @@ public class KeyWordOnline : MonoBehaviour
             if (keyObj == null) continue;
             KeyWord keyComp = keyObj.GetComponent<KeyWord>();
             if (keyComp != null) keyComp.ResetKeyWord();
-            else Debug.LogWarning($"{plotTag}¾çÇé¹Ø¼ü´Ê¡¾{keyObj.name}¡¿ÎŞKeyWord×é¼ş£¬Ìø¹ıÖØÖÃ");
+            else Debug.LogWarning($"{plotTag}å‰§æƒ…å…³é”®è¯ã€{keyObj.name}ã€‘æ— KeyWordç»„ä»¶ï¼Œè·³è¿‡é‡ç½®");
         }
     }
 }
