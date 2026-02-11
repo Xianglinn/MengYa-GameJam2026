@@ -17,4 +17,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Endings.unity
     guid: 838a77bda045a4d47bd885c378ca9759
+  - enabled: 1
+    path: Assets/Scenes/DotGamePlayDome 1.unity
+    guid: 8883c529c2c3b974b8e003d9d4e2eb8c
+  - enabled: 1
+    path: Assets/Scenes/DotGamePlayDome 2.unity
+    guid: c45f3ed6b36bc654b92cb37e18573ab9
+  - enabled: 1
+    path: Assets/Scenes/DotGamePlayDome 3.unity
+    guid: e9bb20aed671f2c478066043e4826b87
   m_configObjects: {}
