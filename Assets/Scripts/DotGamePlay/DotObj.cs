@@ -2,47 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
 public class DotObj : MonoBehaviour
 {
     [SerializeField] private List<Transform> correctTrans = new List<Transform>();
     [SerializeField] private DotSolts solts;
     [SerializeField] private KeyWordOnline keyWordOnline;
     private Vector2 startPos;
-    [SerializeField] private float snapDistance = 0.2f;
+    [Header("拖拽吸附配置")]
+    [SerializeField] private float snapDistance = 0.2f; // 新场景可直接在Inspector调整
     private string occupiedSlotName = null;
     private bool isMatched = false;
-
     void Start()
     {
         startPos = transform.position;
-
         // 自动查找DotSolts并校验
         if (solts == null)
         {
             solts = GameObject.Find("DotSolts")?.GetComponent<DotSolts>();
-            //未找到DotSolts组件
             if (solts == null)
             {
                 enabled = false;
                 return;
             }
         }
-
         // 自动查找KeyWordOnline并校验
         if (keyWordOnline == null)
         {
-            //未找到KeyWordOnline组件，剧情激活功能失效！
             keyWordOnline = FindObjectOfType<KeyWordOnline>();
         }
-
-        // 初始化正确位置列表
+        // 初始化正确位置列表（自动读取DotSolts的格子）
         foreach (var slot in solts.solt)
         {
             correctTrans.Add(slot.transform);
         }
     }
-
     private void OnMouseDrag()
     {
         // 拖拽时释放之前占用的格子
@@ -52,20 +45,16 @@ public class DotObj : MonoBehaviour
             occupiedSlotName = null;
             isMatched = false;
         }
-
-        // 更新拖拽位置
+        // 更新拖拽位置（2D场景适配）
         transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-
         // 显示格子提示
         solts.SetAllChildSpritesAlpha(solts.gameObject.transform, 0.8f);
     }
-
     private void OnMouseUp()
     {
         // 隐藏格子提示
         solts.SetAllChildSpritesAlpha(solts.gameObject.transform, 0f);
-
         // 检查是否吸附到正确格子
         foreach (var targetTrans in correctTrans)
         {
@@ -79,25 +68,23 @@ public class DotObj : MonoBehaviour
                 break;
             }
         }
-
-        //停止动态检测协程
-        keyWordOnline.StopDynamicCheck();
-        keyWordOnline.ResetKeyWordState();
-        Debug.Log("动态检测协程已停止");
-
+        //停止动态检测协程+重置关键词
+        if (keyWordOnline != null)
+        {
+            keyWordOnline.StopDynamicCheck();
+            keyWordOnline.ResetKeyWordState();
+            Debug.Log("动态检测协程已停止");
+        }
         // 未匹配则回归初始位置
         if (!isMatched)
         {
             transform.position = startPos;
         }
-
-        
     }
-
     private void OnDestroy()
     {
         // 销毁时释放占用的格子
-        if (occupiedSlotName != null)
+        if (occupiedSlotName != null && solts != null)
         {
             solts.ReleaseSlot(this);
         }

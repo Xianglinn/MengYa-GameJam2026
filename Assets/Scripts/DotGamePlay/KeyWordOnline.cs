@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// 剧情分支枚举
 public enum PlotType
 {
     None = 0,
     APlot = 1,
-    BPlot = 2
+    BPlot = 2,
+    Cplot = 3
 }
 
 public class KeyWordOnline : MonoBehaviour
@@ -16,10 +16,21 @@ public class KeyWordOnline : MonoBehaviour
     private bool isKeyWordActivated = false;
     private PlotType currentActivatedPlot = PlotType.None;
 
-    [Header("剧情关键词配置")]
-    [SerializeField] private GameObject aKeys;
-    [SerializeField] private GameObject bKeys;
-    [SerializeField] private float checkInterval = 0.1f; // 动态检测频率（可调整）
+    [Header("剧情检测配置")]
+    [SerializeField] private float checkInterval = 0.1f; // 检测频率，新场景可直接调整
+
+    [Header("A剧情配置（多关键词）")]
+    [SerializeField] private List<GameObject> aKeyList = new List<GameObject>();
+    [SerializeField] private List<string> aPlotSlotNames = new List<string>(); // 可配置：A剧情触发的格子名列表
+
+    [Header("B剧情配置（多关键词）")]
+    [SerializeField] private List<GameObject> bKeyList = new List<GameObject>();
+    [SerializeField] private List<string> bPlotSlotNames = new List<string>(); // 可配置：B剧情触发的格子名列表
+
+    [Header("C剧情配置（扩展，多关键词）")]
+    [SerializeField] private List<GameObject> cKeyList = new List<GameObject>();
+    [SerializeField] private List<string> cPlotSlotNames = new List<string>(); // 可配置：C剧情触发的格子名列表
+
     private Coroutine checkCoroutine; // 协程引用
 
     void Start()
@@ -35,17 +46,75 @@ public class KeyWordOnline : MonoBehaviour
             }
         }
 
-        // 校验关键词对象关联
-        if (aKeys == null) Debug.LogError("A分支关键词（aKeys）未关联！");
-        if (bKeys == null) Debug.LogError("B分支关键词（bKeys）未关联！");
+        // 校验关键词列表和卡槽配置
+        ValidatePlotConfig(aKeyList, aPlotSlotNames, "A");
+        ValidatePlotConfig(bKeyList, bPlotSlotNames, "B");
+        ValidatePlotConfig(cKeyList, cPlotSlotNames, "C", true);
 
-        // 校验KeyWord组件
-        if (aKeys != null && aKeys.GetComponent<KeyWord>() == null)
-            Debug.LogError("aKeys对象未挂载KeyWord组件！");
-        if (bKeys != null && bKeys.GetComponent<KeyWord>() == null)
-            Debug.LogError("bKeys对象未挂载KeyWord组件！");
+        // 检测卡槽条件交集（调试提示）
+        CheckSlotIntersection();
     }
 
+    #region 初始化校验
+    /// <summary>
+    /// 统一校验剧情的关键词和卡槽配置
+    /// </summary>
+    private void ValidatePlotConfig(List<GameObject> keyList, List<string> slotList, string plotTag, bool isExtend = false)
+    {
+        // 扩展剧情（如C）允许空配置，非扩展剧情强制校验
+        if (slotList.Count == 0 && !isExtend)
+        {
+            Debug.LogError($"{plotTag}剧情未配置卡槽列表，无法触发！");
+            return;
+        }
+        if (keyList.Count == 0 && !isExtend)
+        {
+            Debug.LogError($"{plotTag}剧情未配置关键词列表，无法激活！");
+            return;
+        }
+        // 校验关键词组件
+        foreach (var keyObj in keyList)
+        {
+            if (keyObj == null)
+            {
+                Debug.LogError($"{plotTag}剧情关键词列表存在空对象！");
+                continue;
+            }
+            if (keyObj.GetComponent<KeyWord>() == null)
+            {
+                Debug.LogError($"{plotTag}剧情对象【{keyObj.name}】未挂载KeyWord组件！");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 检测卡槽条件交集（仅调试提示）
+    /// </summary>
+    private void CheckSlotIntersection()
+    {
+        if (HasIntersection(aPlotSlotNames, bPlotSlotNames))
+            Debug.LogWarning($"A/B剧情卡槽存在交集，冲突场景将触发排他规则");
+        if (HasIntersection(aPlotSlotNames, cPlotSlotNames))
+            Debug.LogWarning($"A/C剧情卡槽存在交集，冲突场景将触发排他规则");
+        if (HasIntersection(bPlotSlotNames, cPlotSlotNames))
+            Debug.LogWarning($"B/C剧情卡槽存在交集，冲突场景将触发排他规则");
+    }
+
+    /// <summary>
+    /// 判断两个列表是否有交集
+    /// </summary>
+    private bool HasIntersection(List<string> list1, List<string> list2)
+    {
+        if (list1.Count == 0 || list2.Count == 0) return false;
+        foreach (var item in list1)
+        {
+            if (list2.Contains(item)) return true;
+        }
+        return false;
+    }
+    #endregion
+
+    #region 协程管理
     /// <summary>
     /// 启动动态检测协程
     /// </summary>
@@ -53,6 +122,7 @@ public class KeyWordOnline : MonoBehaviour
     {
         if (checkCoroutine != null) StopCoroutine(checkCoroutine);
         checkCoroutine = StartCoroutine(CheckPlotConditionCoroutine());
+        Debug.Log("动态检测协程已启动");
     }
 
     /// <summary>
@@ -69,7 +139,7 @@ public class KeyWordOnline : MonoBehaviour
     }
 
     /// <summary>
-    /// 定时检查剧情条件协程
+    /// 定时检查剧情条件协程（优化：增加返回值判断，避免无效执行）
     /// </summary>
     private IEnumerator CheckPlotConditionCoroutine()
     {
@@ -77,45 +147,69 @@ public class KeyWordOnline : MonoBehaviour
         {
             if (!isKeyWordActivated && solts != null && solts.slotOccupancy != null)
             {
-                CheckAndAwakePlot();
+                // 检测到剧情触发则直接退出协程，避免重复检测
+                if (CheckAndAwakePlot() != PlotType.None)
+                {
+                    checkCoroutine = null;
+                    yield break;
+                }
             }
             yield return new WaitForSeconds(checkInterval);
         }
     }
+    #endregion
 
+    #region 核心检测逻辑
     /// <summary>
-    /// 检查并激活剧情分支
+    /// 检查并激活剧情分支（核心：兼容单条件，排他多条件）
     /// </summary>
     public PlotType CheckAndAwakePlot()
     {
-        // 核心依赖为空则返回
+        // 基础依赖校验
         if (solts == null || solts.slotOccupancy == null) return PlotType.None;
 
-        // 替换为实际格子名称（必须修改！）
-        bool isAPlotValid = CheckSlotsOccupied(new List<string> { "DotSolt01", "DotSolt02", "DotSolt03" });
-        if (isAPlotValid)
+        // 第一步：统计当前满足条件的剧情数量
+        int validPlotCount = GetValidPlotCount();
+        // 多剧情条件同时满足→触发排他，不激活任何剧情
+        if (validPlotCount >= 2)
         {
-            aKeys.GetComponent<KeyWord>().SetRed();
-            isKeyWordActivated = true;
-            currentActivatedPlot = PlotType.APlot;
-            Debug.Log("KeyWordOnline：A剧情已激活！关键词变红可拖拽");
-            StopDynamicCheck();
+            Debug.LogWarning($"检测到{validPlotCount}个剧情条件同时满足，触发排他规则，暂不激活任何剧情");
+            return PlotType.None;
+        }
+
+        // 第二步：单剧情条件满足→正常激活（按C→B→A优先级，兼容扩展）
+        // 激活C剧情
+        if (cKeyList.Count > 0 && cPlotSlotNames.Count > 0 && CheckSlotsOccupied(cPlotSlotNames))
+        {
+            ActivatePlotKey(cKeyList, PlotType.Cplot);
+            return PlotType.Cplot;
+        }
+        // 激活B剧情
+        if (bKeyList.Count > 0 && bPlotSlotNames.Count > 0 && CheckSlotsOccupied(bPlotSlotNames))
+        {
+            ActivatePlotKey(bKeyList, PlotType.BPlot);
+            return PlotType.BPlot;
+        }
+        // 激活A剧情
+        if (aKeyList.Count > 0 && aPlotSlotNames.Count > 0 && CheckSlotsOccupied(aPlotSlotNames))
+        {
+            ActivatePlotKey(aKeyList, PlotType.APlot);
             return PlotType.APlot;
         }
 
-        // 替换为实际格子名称（必须修改！）
-        bool isBPlotValid = CheckSlotsOccupied(new List<string> { "DotSolt01", "DotSolt03" });
-        if (isBPlotValid)
-        {
-            bKeys.GetComponent<KeyWord>().SetRed();
-            isKeyWordActivated = true;
-            currentActivatedPlot = PlotType.BPlot;
-            Debug.Log("KeyWordOnline：B剧情已激活！关键词变红可拖拽");
-            StopDynamicCheck();
-            return PlotType.BPlot;
-        }
-
         return PlotType.None;
+    }
+
+    /// <summary>
+    /// 统计当前满足条件的剧情数量
+    /// </summary>
+    private int GetValidPlotCount()
+    {
+        int count = 0;
+        if (aKeyList.Count > 0 && aPlotSlotNames.Count > 0 && CheckSlotsOccupied(aPlotSlotNames)) count++;
+        if (bKeyList.Count > 0 && bPlotSlotNames.Count > 0 && CheckSlotsOccupied(bPlotSlotNames)) count++;
+        if (cKeyList.Count > 0 && cPlotSlotNames.Count > 0 && CheckSlotsOccupied(cPlotSlotNames)) count++;
+        return count;
     }
 
     /// <summary>
@@ -127,6 +221,7 @@ public class KeyWordOnline : MonoBehaviour
         {
             if (!solts.slotOccupancy.ContainsKey(slotName))
             {
+                Debug.LogWarning($"格子{slotName}不存在于DotSolts中");
                 return false;
             }
             if (solts.slotOccupancy[slotName] == null)
@@ -138,6 +233,25 @@ public class KeyWordOnline : MonoBehaviour
     }
 
     /// <summary>
+    /// 激活指定剧情的所有关键词
+    /// </summary>
+    private void ActivatePlotKey(List<GameObject> keyList, PlotType plotType)
+    {
+        foreach (var keyObj in keyList)
+        {
+            if (keyObj == null) continue;
+            KeyWord keyComp = keyObj.GetComponent<KeyWord>();
+            if (keyComp != null) keyComp.SetRed();
+            else Debug.LogWarning($"关键词【{keyObj.name}】无KeyWord组件，跳过激活");
+        }
+        isKeyWordActivated = true;
+        currentActivatedPlot = plotType;
+        StopDynamicCheck();
+        Debug.Log($"触发剧情类型：{plotType}，对应关键词已变红可拖动");
+    }
+    #endregion
+
+    /// <summary>
     /// 重置关键词状态（剧情重新开始/切换时调用）
     /// </summary>
     public void ResetKeyWordState()
@@ -145,37 +259,23 @@ public class KeyWordOnline : MonoBehaviour
         isKeyWordActivated = false;
         currentActivatedPlot = PlotType.None;
 
-        // 重置A分支关键词
-        if (aKeys != null)
-        {
-            KeyWord aKeyComp = aKeys.GetComponent<KeyWord>();
-            if (aKeyComp != null)
-            {
-                aKeyComp.ResetKeyWord();
-                Debug.Log("A分支关键词已重置");
-            }
-            else
-            {
-                Debug.LogWarning("aKeys对象未挂载KeyWord组件，无法重置！");
-            }
-        }
+        ResetPlotKey(aKeyList, "A");
+        ResetPlotKey(bKeyList, "B");
+        ResetPlotKey(cKeyList, "C");
+        Debug.Log("所有剧情关键词状态已重置");
+    }
 
-        // 重置B分支关键词
-        if (bKeys != null)
+    /// <summary>
+    /// 重置指定剧情的所有关键词
+    /// </summary>
+    private void ResetPlotKey(List<GameObject> keyList, string plotTag)
+    {
+        foreach (var keyObj in keyList)
         {
-            KeyWord bKeyComp = bKeys.GetComponent<KeyWord>();
-            if (bKeyComp != null)
-            {
-                bKeyComp.ResetKeyWord();
-                Debug.Log("B分支关键词已重置");
-            }
-            else
-            {
-                Debug.LogWarning("bKeys对象未挂载KeyWord组件，无法重置！");
-            }
+            if (keyObj == null) continue;
+            KeyWord keyComp = keyObj.GetComponent<KeyWord>();
+            if (keyComp != null) keyComp.ResetKeyWord();
+            else Debug.LogWarning($"{plotTag}剧情关键词【{keyObj.name}】无KeyWord组件，跳过重置");
         }
-
-        // 重置后重启动态检测
-        //StartDynamicCheck();
     }
 }
