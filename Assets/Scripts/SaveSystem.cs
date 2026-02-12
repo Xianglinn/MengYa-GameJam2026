@@ -137,13 +137,24 @@ public static class SaveSystem
             string json = File.ReadAllText(GetSavePath(slot));
             GameState state = JsonUtility.FromJson<GameState>(json);
             
+            // 生成内容预览：取前 7 个字 + "......"
+            string preview = "";
+            if (!string.IsNullOrEmpty(state.currentContent))
+            {
+                if (state.currentContent.Length > 7)
+                    preview = state.currentContent.Substring(0, 7) + "......";
+                else
+                    preview = state.currentContent + "......";
+            }
+            
             return new SaveInfo
             {
                 slot = slot,
                 saveName = state.saveName,
                 saveTime = state.saveTime,
                 currentScene = state.currentScene,
-                money = state.money  // 包含金钱
+                sceneName = state.currentSceneName,     // CSV 的 scene
+                contentPreview = preview                // 对话预览
             };
         }
         catch (Exception e)
@@ -162,7 +173,8 @@ public class SaveInfo
     public string saveName;
     public string saveTime;  // 字符串格式的时间
     public string currentScene;
-    public int money;
+    public string sceneName;      // CSV 的 scene 字段（如"前置剧情"、"出师未捷"）
+    public string contentPreview; // 对话内容预览（前 7 个字 + "......"）
     
     // 获取 DateTime 格式的保存时间
     public DateTime GetSaveDateTime()
