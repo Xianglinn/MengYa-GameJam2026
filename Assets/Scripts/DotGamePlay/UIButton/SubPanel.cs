@@ -50,9 +50,10 @@ public class SubPanel : MonoBehaviour
         {
             Debug.LogError("SubPanel的提交按钮subBtn未赋值");
         }
+
         if(jailBtn != null)
         {
-            subBtn.onClick.AddListener(() =>
+            jailBtn.onClick.AddListener(() =>
             {
                 GameManager.I.GoToTrueEndingWind();
             });
