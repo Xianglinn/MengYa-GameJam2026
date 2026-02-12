@@ -15,6 +15,9 @@ public class MainMenuManager : MonoBehaviour
 
     private void Start()
     {
+        // 播放主菜单背景音乐
+        MusicMgr.Instance.PlayBKMusic("Music/bg");
+        
         // 检查是否有存档，如果没有则禁用继续按钮
         if (continueButton != null)
         {

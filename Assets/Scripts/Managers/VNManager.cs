@@ -103,6 +103,13 @@ public class VNManager : MonoBehaviour
                     LoadBackground(currentLine.bg);
                 }
                 
+                // 播放背景音乐
+                if (!string.IsNullOrEmpty(currentLine.bgm))
+                {
+                    Debug.Log($"{Constants.VNManagerTag} Playing BGM (on resume): {currentLine.bgm}");
+                    MusicMgr.Instance.PlayBKMusic(currentLine.bgm);
+                }
+                
                 waitingForInput = true;
                 return;
             }
@@ -229,6 +236,17 @@ public class VNManager : MonoBehaviour
         if (!string.IsNullOrEmpty(currentLine.bg))
         {
             LoadBackground(currentLine.bg);
+        }
+        
+        // 播放背景音乐（CSV 驱动）
+        if (!string.IsNullOrEmpty(currentLine.bgm))
+        {
+            Debug.Log($"{Constants.VNManagerTag} Playing BGM: {currentLine.bgm}");
+            MusicMgr.Instance.PlayBKMusic(currentLine.bgm);
+        }
+        else
+        {
+            Debug.Log($"{Constants.VNManagerTag} No BGM for line: {currentLine.id}");
         }
 
         // 更新游戏状态（保存当前进度）

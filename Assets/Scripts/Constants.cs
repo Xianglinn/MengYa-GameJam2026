@@ -80,7 +80,7 @@ public static class Constants
     // ===== Save System =====
     public const string SaveFilePrefix = "save_";
     public const string SaveFileExtension = ".json";
-    public const int MaxSaveSlots = 3;
+    public const int MaxSaveSlots = 6;
     
     // ===== Ending Registry =====
     /// <summary>结局达成图资源名，对应 Resources/Backgrounds/end1~4</summary>

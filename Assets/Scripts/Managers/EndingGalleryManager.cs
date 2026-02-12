@@ -18,6 +18,9 @@ public class EndingGalleryManager : MonoBehaviour
 
     private void Start()
     {
+        // 播放结局图鉴背景音乐
+        MusicMgr.Instance.PlayBKMusic("Music/bg");
+        
         // 绑定返回按钮
         if (backButton != null)
             backButton.onClick.AddListener(OnBackToMainMenu);
