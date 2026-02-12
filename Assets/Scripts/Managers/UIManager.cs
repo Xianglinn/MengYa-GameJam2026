@@ -37,10 +37,11 @@ public class UIManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 主菜单隐藏快捷按钮
-        bool isMainMenu = scene.name == Constants.Scenes.MainMenu;
+        // 主菜单和结局图鉴隐藏快捷按钮
+        bool shouldHidePanel = scene.name == Constants.Scenes.MainMenu || 
+                               scene.name == Constants.Scenes.EndingGallery;
         if (quickAccessPanel)
-            quickAccessPanel.SetActive(!isMainMenu);
+            quickAccessPanel.SetActive(!shouldHidePanel);
     }
 
     // === 按钮功能 ===
