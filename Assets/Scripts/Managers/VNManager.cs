@@ -235,6 +235,8 @@ public class VNManager : MonoBehaviour
         if (GameManager.I?.State != null)
         {
             GameManager.I.State.currentDialogueId = currentLine.id;
+            GameManager.I.State.currentSceneName = currentLine.scene;  // CSV 的 scene 字段
+            GameManager.I.State.currentContent = currentLine.content;  // 对话内容
             Debug.Log($"{Constants.VNManagerTag} Updated progress: {currentLine.id}");
         }
 

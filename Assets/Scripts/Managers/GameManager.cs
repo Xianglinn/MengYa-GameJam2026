@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
         
         // 确保保存当前场景
         State.currentScene = SceneManager.GetActiveScene().name;
-        Debug.Log($"[GameManager] Saving to slot {slot}, Scene: {State.currentScene}, Money: {State.money}");
+        Debug.Log($"[GameManager] Saving to slot {slot}, Scene: {State.currentScene}, DialogueId: {State.currentDialogueId}");
         
         SaveSystem.Save(slot, State);
     }
