@@ -299,8 +299,8 @@ public class VNManager : MonoBehaviour
             return;
         }
         
-        // 映射 CSV 中的角色名到实际的资源文件名
-        string avatarFileName = GetAvatarFileName(speaker);
+        // 映射 CSV 中的角色名+表情+场景到实际的资源文件名
+        string avatarFileName = GetAvatarFileName(speaker, expression, currentLine?.scene);
         
         // 构建资源路径：Characters/角色名
         string avatarPath = $"Characters/{avatarFileName}";
@@ -313,7 +313,7 @@ public class VNManager : MonoBehaviour
             avatarImage.color = activeAvatarColor;  // 使用设定的颜色
             avatarImage.gameObject.SetActive(true);
             
-            Debug.Log($"{Constants.VNManagerTag} Avatar shown: {avatarPath}");
+            Debug.Log($"{Constants.VNManagerTag} Avatar shown: {avatarPath} (speaker: {speaker}, expression: {expression})");
         }
         else
         {
@@ -324,18 +324,39 @@ public class VNManager : MonoBehaviour
     }
     
     /// <summary>
-    /// 将 CSV 中的角色名映射到资源文件名
+    /// 将 CSV 中的角色名+表情+场景映射到资源文件名
     /// </summary>
-    private string GetAvatarFileName(string speaker)
+    private string GetAvatarFileName(string speaker, string expression, string scene)
     {
-        // 根据 CSV 中的说话人名字，返回对应的资源文件名
+        // 特殊处理：唐沁在监狱（探监室场景）
+        if (speaker == "唐沁" && !string.IsNullOrEmpty(scene) && scene.Contains("往事随风"))
+        {
+            return "唐沁监狱";
+        }
+        
+        // 根据说话人和表情组合返回对应的资源文件名
         switch (speaker)
         {
             case "林子月":
-                return "林子月";
+                // 林子月的表情变体
+                if (!string.IsNullOrEmpty(expression))
+                {
+                    if (expression.Contains("微笑") || expression.Contains("开心") || expression.Contains("高兴"))
+                        return "林子月微笑";
+                }
+                return "林子月";  // 默认表情
             
             case "唐沁":
-                return "唐沁";
+                // 唐沁的表情变体
+                if (!string.IsNullOrEmpty(expression))
+                {
+                    if (expression.Contains("得意") || expression.Contains("自豪"))
+                        return "唐沁自豪";
+                    else if (expression.Contains("愤怒") || expression.Contains("生气"))
+                        return "唐沁愤怒";
+                    // 其他表情（微笑、神情惊慌、黑脸威胁等）使用默认唐沁立绘
+                }
+                return "唐沁";  // 默认表情
             
             case "师弟":
             case "师妹":
