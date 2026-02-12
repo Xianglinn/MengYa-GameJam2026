@@ -16,9 +16,6 @@ public class KeyWordOnline : MonoBehaviour
     private bool isKeyWordActivated = false;
     private PlotType currentActivatedPlot = PlotType.None;
 
-    [Header("剧情检测配置")]
-    [SerializeField] private float checkInterval = 0.1f; // 检测频率，新场景可直接调整
-
     [Header("A剧情配置（多关键词）")]
     [SerializeField] private List<GameObject> aKeyList = new List<GameObject>();
     [SerializeField] private List<string> aPlotSlotNames = new List<string>(); // 可配置：A剧情触发的格子名列表
@@ -121,50 +118,7 @@ public class KeyWordOnline : MonoBehaviour
     }
     #endregion
 
-    #region 协程管理
-    /// <summary>
-    /// 启动动态检测协程
-    /// </summary>
-    public void StartDynamicCheck()
-    {
-        if (checkCoroutine != null) StopCoroutine(checkCoroutine);
-        checkCoroutine = StartCoroutine(CheckPlotConditionCoroutine());
-        Debug.Log("动态检测协程已启动");
-    }
 
-    /// <summary>
-    /// 停止动态检测协程
-    /// </summary>
-    public void StopDynamicCheck()
-    {
-        if (checkCoroutine != null)
-        {
-            StopCoroutine(checkCoroutine);
-            checkCoroutine = null;
-            Debug.Log("KeyWordOnline：动态检测协程已停止");
-        }
-    }
-
-    /// <summary>
-    /// 定时检查剧情条件协程（优化：增加返回值判断，避免无效执行）
-    /// </summary>
-    private IEnumerator CheckPlotConditionCoroutine()
-    {
-        while (true)
-        {
-            if (!isKeyWordActivated && solts != null && solts.slotOccupancy != null)
-            {
-                // 检测到剧情触发则直接退出协程，避免重复检测
-                if (CheckAndAwakePlot() != PlotType.None)
-                {
-                    checkCoroutine = null;
-                    yield break;
-                }
-            }
-            yield return new WaitForSeconds(checkInterval);
-        }
-    }
-    #endregion
 
     #region 核心检测逻辑
     /// <summary>
@@ -181,14 +135,14 @@ public class KeyWordOnline : MonoBehaviour
             return PlotType.Cplot;
         }
 
-        // ����B����（中优先级）
+        // 中优先级
         if (bKeyList.Count > 0 && bPlotSlotNames.Count > 0 && CheckSlotsOccupied(bPlotSlotNames))
         {
             ActivatePlotKey(bKeyList, PlotType.BPlot);
             return PlotType.BPlot;
         }
 
-        // ����A����（最低优先级）
+        // 最低优先级
         if (aKeyList.Count > 0 && aPlotSlotNames.Count > 0 && CheckSlotsOccupied(aPlotSlotNames))
         {
             ActivatePlotKey(aKeyList, PlotType.APlot);
@@ -233,7 +187,7 @@ public class KeyWordOnline : MonoBehaviour
         }
         isKeyWordActivated = true;
         currentActivatedPlot = plotType;
-        StopDynamicCheck();
+
         Debug.Log($"触发剧情类型：{plotType}，对应关键词已变红可拖动");
     }
     #endregion

@@ -8,6 +8,8 @@ public class SubPanel : MonoBehaviour
 {
     [SerializeField] private KeyWordOnline keyWordOnline;
     public Button subBtn;
+    public Button jailBtn;
+
     [Header("UI显示配置")]
     [SerializeField] private TextMeshProUGUI tmpText;
     [SerializeField] private string tipText = "请说出chinese";
@@ -47,6 +49,13 @@ public class SubPanel : MonoBehaviour
         {
             Debug.LogError("SubPanel的提交按钮subBtn未赋值");
         }
+        if(jailBtn != null)
+        {
+            subBtn.onClick.AddListener(() =>
+            {
+                GameManager.I.GoToTrueEndingWind();
+            });
+        }
 
         if (tmpText != null)
         {
@@ -70,8 +79,6 @@ public class SubPanel : MonoBehaviour
             return;
         }
 
-        // 启动动态检测（激活对应剧情的关键词）
-        keyWordOnline.StartDynamicCheck();
         PlotType triggeredPlot = keyWordOnline.CheckAndAwakePlot();
 
         // 仅显示提示文本，不再验证剧情
@@ -88,6 +95,7 @@ public class SubPanel : MonoBehaviour
             Debug.Log("未触发任何剧情，显示提示");
         }
     }
+
 
     private string GetRandomMockText()
     {

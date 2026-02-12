@@ -70,7 +70,6 @@ public class DotObj : MonoBehaviour
         }
         if (!isMatched && keyWordOnline != null)
         {
-            keyWordOnline.StopDynamicCheck();
             keyWordOnline.ResetKeyWordState();
             Debug.Log("DotObjŒ¥∆•≈‰≤€Œª£¨÷ÿ÷√πÿº¸¥ ◊¥Ã¨");
         }
