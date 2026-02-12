@@ -91,6 +91,20 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+    // 打开结局图鉴
+    public void OnOpenEndingGallery()
+    {
+        Debug.Log("[MainMenu] Opening ending gallery...");
+        
+        if (GameManager.I == null)
+        {
+            GameObject gmObj = new GameObject("GameManager");
+            gmObj.AddComponent<GameManager>();
+        }
+        
+        GameManager.I.LoadScene(Constants.Scenes.EndingGallery);
+    }
+    
     // 退出游戏
     public void OnQuit()
     {

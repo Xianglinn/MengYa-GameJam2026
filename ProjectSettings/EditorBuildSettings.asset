@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DotGamePlayDome 3.unity
     guid: e9bb20aed671f2c478066043e4826b87
+  - enabled: 1
+    path: Assets/Scenes/EndingGallery.unity
+    guid: 1bf653c7448058c4eb454e3df0bda30e
   m_configObjects: {}

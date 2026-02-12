@@ -381,6 +381,11 @@ public class VNManager : MonoBehaviour
     /// </summary>
     private void ShowEndingAchievement()
     {
+        // 0. 记录达成的结局到全局 Registry（与存档同目录）
+        string endingId = GetEndingIdFromStoryFile(storyFilePath);
+        if (!string.IsNullOrEmpty(endingId))
+            EndingRegistry.Record(endingId);
+        
         // 1. 隐藏对话框
         if (dialoguePanel != null)
             dialoguePanel.SetActive(false);
@@ -401,6 +406,19 @@ public class VNManager : MonoBehaviour
         // 4. 标记为显示结局状态
         isShowingEnding = true;
         waitingForInput = true;  // 等待玩家点击
+    }
+    
+    /// <summary>
+    /// 根据故事文件路径映射到结局 ID（对应 Resources/Backgrounds/end1~4）
+    /// </summary>
+    private string GetEndingIdFromStoryFile(string storyFile)
+    {
+        if (string.IsNullOrEmpty(storyFile)) return null;
+        if (storyFile.Contains("END_BE_failed")) return Constants.EndingSpriteNames.End1;
+        if (storyFile.Contains("END_NE_drifting")) return Constants.EndingSpriteNames.End2;
+        if (storyFile.Contains("END_TE_wind")) return Constants.EndingSpriteNames.End3;
+        if (storyFile.Contains("END_HE_jade_blessed")) return Constants.EndingSpriteNames.End4;
+        return null;
     }
     
     /// <summary>
