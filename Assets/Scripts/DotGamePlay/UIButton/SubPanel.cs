@@ -8,8 +8,11 @@ public class SubPanel : MonoBehaviour
 {
     [SerializeField] private KeyWordOnline keyWordOnline;
     public Button subBtn;
+    public Button jailBtn;
+
     [Header("UI显示配置")]
     [SerializeField] private TextMeshProUGUI tmpText;
+    [SerializeField] private TextMeshProUGUI moneyText;
     [SerializeField] private string tipText = "请说出chinese";
 
     // 嘲讽文案数组（整合所有文案）
@@ -48,6 +51,14 @@ public class SubPanel : MonoBehaviour
             Debug.LogError("SubPanel的提交按钮subBtn未赋值");
         }
 
+        if(jailBtn != null)
+        {
+            jailBtn.onClick.AddListener(() =>
+            {
+                GameManager.I.GoToTrueEndingWind();
+            });
+        }
+
         if (tmpText != null)
         {
             tmpText.gameObject.SetActive(false);
@@ -57,10 +68,16 @@ public class SubPanel : MonoBehaviour
         {
             Debug.LogError("SubPanel的显示文本tmpText未赋值");
         }
+
+        //初始化理赔金额
+        moneyText.text = "0";
+
+        //三轮调解游戏场景的背景音乐
+        MusicMgr.Instance.PlayBKMusic("Music/Playingback");
     }
 
     /// <summary>
-    /// 仅激活对应剧情的关键词（不再触发剧情验证）
+    /// 激活对应剧情的关键词和理赔金额
     /// </summary>
     public void ActivateKeyWords()
     {
@@ -70,24 +87,60 @@ public class SubPanel : MonoBehaviour
             return;
         }
 
-        // 启动动态检测（激活对应剧情的关键词）
-        keyWordOnline.StartDynamicCheck();
         PlotType triggeredPlot = keyWordOnline.CheckAndAwakePlot();
 
+        tmpText.gameObject.SetActive(true);
         // 仅显示提示文本，不再验证剧情
         if (triggeredPlot != PlotType.None)
         {
-            tmpText.gameObject.SetActive(false);
+            tmpText.text = "请将所有关键词拖入笔录";
             Debug.Log($"已激活{triggeredPlot}剧情的关键词，请将所有关键词拖入剧情区");
         }
         else
         {
             // 随机获取嘲讽文案并显示
             tmpText.text = GetRandomMockText();
-            tmpText.gameObject.SetActive(true);
             Debug.Log("未触发任何剧情，显示提示");
         }
+
+        string currentSceneName = gameObject.scene.name;
+
+        if (triggeredPlot == PlotType.APlot)
+        {
+            switch (currentSceneName)
+            {
+                case "DotGamePlayDome 1":
+                    moneyText.text = "11000";
+                    break;
+                case "DotGamePlayDome 2":
+                    moneyText.text = "7500";
+                    break;
+                case "DotGamePlayDome 3":
+                    moneyText.text = "11000";
+                    break;
+            }
+        }
+        else if(triggeredPlot == PlotType.BPlot)
+        {
+            switch (currentSceneName)
+            {
+                case "DotGamePlayDome 1":
+                    moneyText.text = "0";
+                    break;
+                case "DotGamePlayDome 2":
+                    moneyText.text = "0";
+                    break;
+                case "DotGamePlayDome 3":
+                    moneyText.text = "205000";
+                    break;
+            }
+        }
+        else
+        {
+            moneyText.text = "0";
+        }
     }
+
 
     private string GetRandomMockText()
     {
