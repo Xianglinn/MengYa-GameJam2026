@@ -66,6 +66,9 @@ public class SubPanel : MonoBehaviour
         {
             Debug.LogError("SubPanel的显示文本tmpText未赋值");
         }
+
+        //三轮调解游戏场景的背景音乐
+        MusicMgr.Instance.PlayBKMusic("Music/Playingback");
     }
 
     /// <summary>
@@ -81,6 +84,7 @@ public class SubPanel : MonoBehaviour
 
         PlotType triggeredPlot = keyWordOnline.CheckAndAwakePlot();
 
+        tmpText.gameObject.SetActive(true);
         // 仅显示提示文本，不再验证剧情
         if (triggeredPlot != PlotType.None)
         {
@@ -91,7 +95,6 @@ public class SubPanel : MonoBehaviour
         {
             // 随机获取嘲讽文案并显示
             tmpText.text = GetRandomMockText();
-            tmpText.gameObject.SetActive(true);
             Debug.Log("未触发任何剧情，显示提示");
         }
     }
