@@ -60,7 +60,7 @@ public class SubPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// 仅激活对应剧情的关键词（不再触发剧情验证）
+    /// 仅激活对应剧情的关键词
     /// </summary>
     public void ActivateKeyWords()
     {
@@ -77,7 +77,7 @@ public class SubPanel : MonoBehaviour
         // 仅显示提示文本，不再验证剧情
         if (triggeredPlot != PlotType.None)
         {
-            tmpText.gameObject.SetActive(false);
+            tmpText.text = "请将所有关键词拖入笔录";
             Debug.Log($"已激活{triggeredPlot}剧情的关键词，请将所有关键词拖入剧情区");
         }
         else
