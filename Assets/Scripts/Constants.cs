@@ -62,6 +62,7 @@ public static class Constants
         public const string Game = "Game";
         public const string DotGamePlayDome1 = "dotgameplaydome 1";  // DotGamePlay 玩法场景
         public const string Endings = "Endings";  // 通用结局场景
+        public const string EndingGallery = "EndingGallery";  // 结局图鉴
     }
     
     // ===== Story File Paths =====
@@ -80,4 +81,17 @@ public static class Constants
     public const string SaveFilePrefix = "save_";
     public const string SaveFileExtension = ".json";
     public const int MaxSaveSlots = 3;
+    
+    // ===== Ending Registry =====
+    /// <summary>结局达成图资源名，对应 Resources/Backgrounds/end1~4</summary>
+    public static class EndingSpriteNames
+    {
+        public const string End1 = "end1";  // 坏结局 - 出师未捷
+        public const string End2 = "end2";  // 普通结局 - 身如浮萍
+        public const string End3 = "end3";  // 真结局 - 往事随风
+        public const string End4 = "end4";  // 好结局 - 玉养人两世
+        public const string Unlock = "unlock";  // 未达成时显示的图
+    }
+    
+    public const string EndingRegistryFileName = "achieved_endings.json";
 }
