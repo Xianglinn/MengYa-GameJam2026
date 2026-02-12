@@ -32,7 +32,33 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
+        // 绑定按钮事件
+        if (saveButton != null)
+            saveButton.onClick.AddListener(OnSave);
+        
+        if (mainMenuButton != null)
+            mainMenuButton.onClick.AddListener(OnReturnToMainMenu);
+        
+        if (muteButton != null)
+            muteButton.onClick.AddListener(OnToggleMute);
+        
+        // 加载静音状态
         LoadMuteState();
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        
+        // 清理按钮事件
+        if (saveButton != null)
+            saveButton.onClick.RemoveListener(OnSave);
+        
+        if (mainMenuButton != null)
+            mainMenuButton.onClick.RemoveListener(OnReturnToMainMenu);
+        
+        if (muteButton != null)
+            muteButton.onClick.RemoveListener(OnToggleMute);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
