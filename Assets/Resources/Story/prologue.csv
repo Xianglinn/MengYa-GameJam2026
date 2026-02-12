@@ -1,5 +1,5 @@
 id,next_id,speaker,scene,content,type,choices,target,condition,expression,fx,bg,effect,nameOverride,bgm
-pre_0001,pre_0002,林子月,前置剧情,"啊！",line,,,,,,一黑一亮类似睁眼的特效（有时间做）,,"",Music/pre1
+pre_0001,pre_0002,林子月,前置剧情,"啊！",line,,,,,,黑色背景,,"",Music/pre1
 pre_0002,pre_0003,师弟,前置剧情,"师姐，你怎么了，怎么突然坐到地上了？",line,,,,黑色蒙版,,实验室,,"",
 pre_0003,pre_0004,林子月,前置剧情,"没事，刚刚突然摔跤了而已。",line,,,,,,实验室,,"",
 pre_0004,pre_0005,,前置剧情,"大脑神经宛如冬日冷风洗礼一般疼痛，我仔细扫视过眼前的场景，各式各样的实验器材看似凌乱却井井有条地堆放在干净的桌面上，不少眼熟的师弟师妹正在整理今日的实验数据，一切都与自己记忆中的一模一样。",narration,,,,,,实验室,,"",
