@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/EndingGallery.unity
     guid: 1bf653c7448058c4eb454e3df0bda30e
+  - enabled: 1
+    path: Assets/Scenes/Saves.unity
+    guid: c313dc5f8e684de459eac925311e687d
   m_configObjects: {}

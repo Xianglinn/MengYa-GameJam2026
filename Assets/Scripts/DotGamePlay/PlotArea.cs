@@ -8,6 +8,8 @@ public class PlotArea : MonoBehaviour
     [SerializeField] private float snapDistance = 0.3f; // 关键词吸附到剧情区的距离
     [SerializeField] private bool autoTriggerPlot = true; // 是否自动触发剧情
 
+    public ComicsPanel displaySwitchScript; // 关联目标脚本
+
     // 已拖入剧情区的关键词
     private List<KeyWord> draggedKeywords = new List<KeyWord>();
     // 当前激活的剧情类型（从KeyWordOnline获取）
@@ -123,36 +125,79 @@ public class PlotArea : MonoBehaviour
         {
             case PlotType.APlot:
                 Debug.Log("触发A剧情逻辑");
-                if(currentSceneName == "DotGamePlayDome 1")
+                if (currentSceneName == "DotGamePlayDome 1")
                 {
-                    GameManager.I.GoToBadEndingFailed();
+                    // 加载图片
+                    Sprite targetSprite = Resources.Load<Sprite>("Comics/1A");
+
+                    // 调用方法显示图片
+                    if (displaySwitchScript != null && targetSprite != null)
+                    {
+                        displaySwitchScript.SetDisplayImage(targetSprite);
+                    }
                 }
-                else if(currentSceneName == "DotGamePlayDome 2")
+                else if (currentSceneName == "DotGamePlayDome 2")
                 {
-                    GameManager.I.GoToNormalEndingDrifting();
+                    // 加载图片
+                    Sprite targetSprite = Resources.Load<Sprite>("Comics/2A");
+
+                    // 调用方法显示图片
+                    if (displaySwitchScript != null && targetSprite != null)
+                    {
+                        displaySwitchScript.SetDisplayImage(targetSprite);
+                    }
                 }
                 else
                 {
-                    GameManager.I.GoToBadEndingFailed();
+                    // 加载图片
+                    Sprite targetSprite = Resources.Load<Sprite>("Comics/3A");
+
+                    // 调用方法显示图片
+                    if (displaySwitchScript != null && targetSprite != null)
+                    {
+                        displaySwitchScript.SetDisplayImage(targetSprite);
+                    }
                 }
-                //GameManager.I.GoToBadEndingFailed();
+
                 break;
 
             case PlotType.BPlot:
                 Debug.Log("触发B剧情逻辑");
+
                 if (currentSceneName == "DotGamePlayDome 1")
                 {
-                    GameManager.I.LoadScene("DotGamePlayDome 2");
+                    // 加载图片
+                    Sprite targetSprite = Resources.Load<Sprite>("Comics/1B");
+
+                    // 调用方法显示图片
+                    if (displaySwitchScript != null && targetSprite != null)
+                    {
+                        displaySwitchScript.SetDisplayImage(targetSprite);
+                    }
                 }
                 else if (currentSceneName == "DotGamePlayDome 2")
                 {
-                    GameManager.I.LoadScene("DotGamePlayDome 3");
+                    // 加载图片
+                    Sprite targetSprite = Resources.Load<Sprite>("Comics/2B");
+
+                    // 调用方法显示图片
+                    if (displaySwitchScript != null && targetSprite != null)
+                    {
+                        displaySwitchScript.SetDisplayImage(targetSprite);
+                    }
                 }
                 else
                 {
-                    GameManager.I.GoToHappyEndingJadeBlessed();
+                    // 加载图片
+                    Sprite targetSprite = Resources.Load<Sprite>("Comics/3B");
+
+                    // 调用方法显示图片
+                    if (displaySwitchScript != null && targetSprite != null)
+                    {
+                        displaySwitchScript.SetDisplayImage(targetSprite);
+                    }
                 }
-                //GameManager.I.GoToNormalEndingDrifting();
+
                 break;
 
             case PlotType.Cplot:
