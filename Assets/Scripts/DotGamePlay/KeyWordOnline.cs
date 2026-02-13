@@ -158,6 +158,7 @@ public class KeyWordOnline : MonoBehaviour
     /// </summary>
     private bool CheckSlotsOccupied(List<string> slotNames)
     {
+        // 第一步：校验目标卡槽是否全部存在且被占用
         foreach (string slotName in slotNames)
         {
             if (!solts.slotOccupancy.ContainsKey(slotName))
@@ -170,6 +171,22 @@ public class KeyWordOnline : MonoBehaviour
                 return false;
             }
         }
+
+        //校验非目标卡槽是否全部空闲
+        foreach (var kvp in solts.slotOccupancy)
+        {
+            string currentSlotName = kvp.Key;
+            DotObj occupiedDot = kvp.Value;
+
+            // 如果当前卡槽不是目标卡槽，但被占用 → 条件不满足
+            if (!slotNames.Contains(currentSlotName) && occupiedDot != null)
+            {
+                Debug.LogWarning($"非目标卡槽[{currentSlotName}]被占用，拒绝触发剧情");
+                return false;
+            }
+        }
+
+        // 两步都满足 → 条件成立
         return true;
     }
 

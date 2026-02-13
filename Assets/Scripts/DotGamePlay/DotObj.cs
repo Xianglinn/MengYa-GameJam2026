@@ -68,7 +68,7 @@ public class DotObj : MonoBehaviour
                 break;
             }
         }
-        if (!isMatched && keyWordOnline != null)
+        if (keyWordOnline != null)
         {
             keyWordOnline.ResetKeyWordState();
             Debug.Log("DotObjŒ¥∆•≈‰≤€Œª£¨÷ÿ÷√πÿº¸¥ ◊¥Ã¨");
